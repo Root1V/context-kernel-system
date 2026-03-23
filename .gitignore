@@ -1,0 +1,21 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Dependencies
+node_modules/
+__pycache__/
+env/
+.env
+venv/
+
+# Build/Dist
+dist/
+build/
+out/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
