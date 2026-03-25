@@ -1,0 +1,7 @@
+[project]
+name = "context-kernel-system"
+version = "0.1.0"
+description = "Context Kernel es a modular runtime for stateful AI Systems: context assembly, layered memory, retrieval, tool orchestration, and sleep-time consolidation"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = []

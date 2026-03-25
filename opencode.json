@@ -1,0 +1,51 @@
+{
+    "$schema": "https://opencode.ai/config.json",
+    "instructions": [
+        "AGENTS.md",
+        "docs/vision/system-overview.md",
+        "docs/vision/invariants.md",
+        "docs/architecture/module-boundaries.md",
+        "docs/architecture/runtime-flows.md",
+        "docs/architecture/storage-model.md",
+        "packages/*/AGENTS.md"
+    ],
+    "agent": {
+        "orchestrator": {
+            "mode": "primary"
+        },
+        "planner": {
+            "mode": "subagent",
+            "permission": {
+                "edit": "deny",
+                "bash": {
+                    "*": "deny",
+                    "git status*": "allow",
+                    "grep *": "allow",
+                    "ls *": "allow",
+                    "cat *": "allow",
+                    "tree": "allow",
+                    "find *": "allow"
+                }
+            }
+        },
+        "context-architect": {
+            "mode": "subagent"
+        },
+        "memory-architect": {
+            "mode": "subagent"
+        },
+        "retrieval-architect": {
+            "mode": "subagent"
+        },
+        "backend-builder": {
+            "mode": "subagent"
+        },
+        "evaluator": {
+            "mode": "subagent"
+        },
+        "sleep-time-worker": {
+            "mode": "subagent",
+            "hidden": true
+        }
+    }
+}
