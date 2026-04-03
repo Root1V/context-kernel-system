@@ -36,6 +36,8 @@ dev = [
     "pytest>=8.0.0",
     "pytest-asyncio>=0.23.0",
     "pytest-cov>=5.0.0",
+    "ruff>=0.4.0",
+    "mypy>=1.10.0",
 ]
 
 [build-system]
@@ -49,4 +51,32 @@ asyncio_mode = "strict"
 
 [tool.setuptools.packages.find]
 where = ["packages", "apps"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "C4", "SIM"]
+ignore = [
+    "E501",   # line too long — handled by formatter
+    "B008",   # do not perform function calls in default argument
+    "UP007",  # Optional[X] vs X | None — needed for Python 3.9 compat
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101"]   # assert allowed in tests
+"**/tests/**" = ["S101"]
+
+[tool.mypy]
+python_version = "3.9"
+strict = false
+ignore_missing_imports = true
+no_implicit_reexport = false
+exclude = [
+    "tests/",
+    "apps/api/tests/",
+    "apps/worker/tests/",
+    "packages/.*/tests/",
+]
 
