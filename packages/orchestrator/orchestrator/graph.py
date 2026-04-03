@@ -138,7 +138,12 @@ def orchestrate(turn_request: TurnRequest) -> TurnResponse:
 
     try:
         graph = _build_graph()
-        final_state: RuntimeState = graph.invoke(initial_state)
+        result = graph.invoke(initial_state)
+        # LangGraph returns a dict when state is a Pydantic model; reconstruct.
+        if isinstance(result, dict):
+            final_state: RuntimeState = RuntimeState(**result)
+        else:
+            final_state = result
     except ImportError:
         # LangGraph not installed — run nodes sequentially as a fallback.
         final_state = _run_sequential(initial_state)
