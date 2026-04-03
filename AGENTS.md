@@ -82,8 +82,19 @@ cd apps/api
 PYTHONPATH=../../packages uvicorn app.main:app --reload --port 8000
 ```
 
-## Spec-Driven Changes (openspec/)
-New features start as a spec in `openspec/changes/<name>/`. Use the available skills:
+## Spec-Driven Changes (openspec/) — MANDATORY
+
+> **No production code may be written or modified without an active OpenSpec change.**
+> New features and non-trivial refactors must always start as a spec.
+> Bug fixes and chore tasks (tooling, config, docs) are the only exceptions.
+
+The mandatory cycle for every change is:
+1. **Propose** (`opsx:propose`) — define the change before writing any code.
+2. **Apply** (`opsx:apply`) — implement only the tasks listed in the spec.
+3. **Archive** (`opsx:archive`) — close the change once the PR is merged.
+
+If asked to implement something without an open spec, create the spec first.
+Specs live in `openspec/changes/<name>/`. Use the available skills:
 - `opsx:propose` — create a new change proposal
 - `opsx:apply` — implement tasks from a spec
 - `opsx:archive` — archive a completed change

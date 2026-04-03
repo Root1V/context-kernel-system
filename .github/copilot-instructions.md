@@ -39,8 +39,23 @@ Fix any failures before pushing. The hook runs: ruff lint, ruff format check, my
 - Never import cross-package internal submodules — only top-level `__init__` exports.
 - `from memory import MemoryService` ✅  |  `from memory.models import X` ❌
 
-## Spec-Driven Workflow
-New features start as an openspec change. Skills available:
+## Spec-Driven Workflow (MANDATORY)
+
+> **BLOCKING RULE: No production code may be written, modified, or proposed without an active OpenSpec change.**
+> This applies to new features, refactors, and any non-trivial logic change.
+> Bug fixes and chore tasks (tooling, config, docs) are the only exceptions.
+
+The mandatory cycle for every change is:
+1. **Propose** — create a spec with `opsx:propose` before writing any code.
+2. **Apply** — implement only the tasks defined in the spec with `opsx:apply`.
+3. **Archive** — mark the change as complete with `opsx:archive` after the PR merges.
+
+If asked to implement something that has no open spec:
+- Do NOT write the code.
+- Instead, propose a spec first using `opsx:propose`.
+- Wait for the user to confirm the spec before proceeding to implementation.
+
+Skills available:
 - Propose: read `.github/skills/openspec-propose/SKILL.md`
 - Apply: read `.github/skills/openspec-apply-change/SKILL.md`
 - Archive: read `.github/skills/openspec-archive-change/SKILL.md`
