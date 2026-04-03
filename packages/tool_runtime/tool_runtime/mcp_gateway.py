@@ -5,7 +5,7 @@ This module MUST NOT self-invoke or initiate chained tool calls.
 """
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Optional
 
 from pydantic import BaseModel
 
@@ -17,7 +17,7 @@ class ToolResult(BaseModel):
     tool_name: str
     output: str
     truncated: bool = False
-    error: str | None = None
+    error: Optional[str] = None
     status: str = "success"  # success | error
 
 

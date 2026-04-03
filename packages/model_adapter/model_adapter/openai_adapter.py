@@ -13,6 +13,12 @@ from .base import (
 from .limits import get_context_limit, is_openai
 from .tokenizer import count_tokens
 
+try:
+    from openai import OpenAI, RateLimitError as _OAIRateLimit
+except ImportError:  # pragma: no cover
+    OpenAI = None  # type: ignore[assignment,misc]
+    _OAIRateLimit = None  # type: ignore[assignment,misc]
+
 
 class OpenAIAdapter:
     """Provider adapter for OpenAI chat-completion models."""
@@ -26,12 +32,10 @@ class OpenAIAdapter:
         if not is_openai(model_id):
             raise UnsupportedModelError(model_id)
 
-        try:
-            from openai import OpenAI, RateLimitError as _OAIRateLimit
-        except ImportError as exc:  # pragma: no cover
+        if OpenAI is None:  # pragma: no cover
             raise RuntimeError(
                 "openai package is required. Install with: pip install openai"
-            ) from exc
+            )
 
         client = OpenAI()
         kwargs: dict[str, Any] = {"model": model_id, "messages": messages}

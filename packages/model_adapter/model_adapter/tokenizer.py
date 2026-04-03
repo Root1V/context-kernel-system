@@ -3,6 +3,11 @@ from __future__ import annotations
 from .base import UnsupportedModelError
 from .limits import get_context_limit, is_anthropic, is_openai  # noqa: F401
 
+try:
+    import tiktoken
+except ImportError:  # pragma: no cover
+    tiktoken = None  # type: ignore[assignment]
+
 
 def count_tokens(text: str, model_id: str) -> int:
     """Count the number of tokens in *text* for the given model.
@@ -20,14 +25,11 @@ def count_tokens(text: str, model_id: str) -> int:
 
 
 def _count_tiktoken(text: str, model_id: str) -> int:
-    try:
-        import tiktoken
-    except ImportError as exc:  # pragma: no cover
+    if tiktoken is None:  # pragma: no cover
         raise RuntimeError(
             "tiktoken is required for OpenAI token counting. "
             "Install it with: pip install tiktoken"
-        ) from exc
-
+        )
     try:
         encoding = tiktoken.encoding_for_model(model_id)
     except KeyError:

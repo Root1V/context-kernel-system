@@ -27,17 +27,22 @@ class CoreMemoryService:
     def add_block(self, block: CoreMemoryBlock) -> CoreMemoryBlock:
         key = str(block.session_id)
         blocks = list(self._store.get(key, []))
+        current_tokens = sum(b.token_count for b in blocks)
 
-        # Enforce budget: evict lowest-scored block if needed
-        while (
-            self.total_tokens(block.session_id) + block.token_count > self._max_tokens
-            and blocks
-        ):
+        # Enforce budget: evict the least-important existing block only if
+        # the incoming block has higher importance. If the new block is the
+        # least important, silently drop it.
+        while current_tokens + block.token_count > self._max_tokens and blocks:
             blocks.sort(key=lambda b: b.importance_score)
-            blocks.pop(0)
+            if blocks[0].importance_score >= block.importance_score:
+                # New block is less important than everything — don't add it.
+                return block
+            evicted = blocks.pop(0)
+            current_tokens -= evicted.token_count
 
-        blocks.append(block)
-        self._store[key] = blocks
+        if current_tokens + block.token_count <= self._max_tokens:
+            blocks.append(block)
+            self._store[key] = blocks
         return block
 
     def remove_block(self, session_id: UUID, block_id: UUID) -> None:

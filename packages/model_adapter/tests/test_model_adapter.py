@@ -109,7 +109,8 @@ class TestOpenAIComplete:
 
     @patch("model_adapter.openai_adapter.OpenAI")
     def test_rate_limit_raises_rate_limit_error(self, MockOpenAI):
-        from openai import RateLimitError as OAIRateLimit
+        openai_mod = pytest.importorskip("openai", reason="openai not installed")
+        OAIRateLimit = openai_mod.RateLimitError
 
         mock_client = MagicMock()
         mock_error = OAIRateLimit(

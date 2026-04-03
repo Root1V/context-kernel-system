@@ -2,6 +2,13 @@ from __future__ import annotations
 
 from typing import Any
 
+try:
+    import anthropic
+    from anthropic import RateLimitError as _AnthRateLimit
+except ImportError:  # pragma: no cover
+    anthropic = None  # type: ignore[assignment]
+    _AnthRateLimit = None  # type: ignore[assignment,misc]
+
 from .base import (
     FinishReason,
     ModelResponse,
@@ -26,13 +33,10 @@ class AnthropicAdapter:
         if not is_anthropic(model_id):
             raise UnsupportedModelError(model_id)
 
-        try:
-            import anthropic
-            from anthropic import RateLimitError as _AnthRateLimit
-        except ImportError as exc:  # pragma: no cover
+        if anthropic is None:  # pragma: no cover
             raise RuntimeError(
                 "anthropic package is required. Install with: pip install anthropic"
-            ) from exc
+            )
 
         client = anthropic.Anthropic()
 

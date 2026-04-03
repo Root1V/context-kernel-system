@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Any
+from typing import Any, Optional
 
 from pydantic import BaseModel, Field
 
@@ -26,7 +26,7 @@ class ToolCall(BaseModel):
 
 
 class ModelResponse(BaseModel):
-    content: str | None = None
+    content: Optional[str] = None
     tool_calls: list[ToolCall] = Field(default_factory=list)
     usage: TokenUsage
     finish_reason: FinishReason

@@ -14,13 +14,16 @@ from ..schemas.chat import ChatRequest, ChatResponse
 
 router = APIRouter()
 
-# Make packages importable when running inside apps/api/
-_PACKAGES = os.path.join(os.path.dirname(__file__), "..", "..", "..", "..", "packages")
-if _PACKAGES not in sys.path:
-    sys.path.insert(0, _PACKAGES)
-_ORCHESTRATOR = os.path.join(_PACKAGES, "orchestrator")
-if _ORCHESTRATOR not in sys.path:
-    sys.path.insert(0, _ORCHESTRATOR)
+# Make packages importable when running inside apps/api/.
+# Each package lives in its own subdirectory (packages/<name>/<name>/)
+# so we add every packages/*/ subdir to sys.path.
+_PACKAGES_ROOT = os.path.normpath(
+    os.path.join(os.path.dirname(__file__), "..", "..", "..", "..", "packages")
+)
+for _pkg_dir in sorted(os.listdir(_PACKAGES_ROOT)):
+    _pkg_path = os.path.join(_PACKAGES_ROOT, _pkg_dir)
+    if os.path.isdir(_pkg_path) and _pkg_path not in sys.path:
+        sys.path.insert(0, _pkg_path)
 
 
 @router.post("/chat", response_model=ChatResponse, status_code=200)

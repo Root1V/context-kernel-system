@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from enum import Enum
-from typing import Any
+from typing import Any, Optional
 
 from pydantic import BaseModel, Field
 
@@ -37,7 +37,7 @@ class StateTransitionError(Exception):
 class TaskState(BaseModel):
     task_id: str
     status: TaskStatus = TaskStatus.pending
-    current_step: str | None = None
+    current_step: Optional[str] = None
     metadata: dict[str, Any] = Field(default_factory=dict)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
@@ -49,6 +49,6 @@ class TaskState(BaseModel):
 
 
 class TaskStatePatch(BaseModel):
-    status: TaskStatus | None = None
-    current_step: str | None = None
-    metadata: dict[str, Any] | None = None
+    status: Optional[TaskStatus] = None
+    current_step: Optional[str] = None
+    metadata: Optional[dict[str, Any]] = None
