@@ -95,12 +95,16 @@ PYTHONPATH=../../packages uvicorn app.main:app --reload --port 8000
 The mandatory cycle for every change is:
 1. **Propose** (`opsx:propose`) — define the change before writing any code.
 2. **Apply** (`opsx:apply`) — implement only the tasks listed in the spec.
-3. **Archive** (`opsx:archive`) — close the change once the PR is merged.
+3. **Verify** (`opsx:verify`) — confirm deliverables match the proposal; run the quality gate.
+4. **Document** (`opsx:document`) — update ADRs, README, and architecture docs.
+5. **Archive** (`opsx:archive`) — close the change once the PR is merged.
 
 If asked to implement something without an open spec, create the spec first.
 Specs live in `openspec/changes/<name>/`. Use the available skills:
 - `opsx:propose` — create a new change proposal
 - `opsx:apply` — implement tasks from a spec
+- `opsx:verify` — verify deliverables against the proposal and run the quality gate
+- `opsx:document` — update project documentation to reflect the change
 - `opsx:archive` — archive a completed change
 
 ## Package Import Rules

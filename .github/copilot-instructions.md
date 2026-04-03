@@ -52,7 +52,9 @@ Fix any failures before pushing. The hook runs: ruff lint, ruff format check, my
 The mandatory cycle for every change is:
 1. **Propose** — create a spec with `opsx:propose` before writing any code.
 2. **Apply** — implement only the tasks defined in the spec with `opsx:apply`.
-3. **Archive** — mark the change as complete with `opsx:archive` after the PR merges.
+3. **Verify** — cross-check deliverables against the proposal and run the quality gate with `opsx:verify`.
+4. **Document** — update ADRs, README, and architecture docs with `opsx:document`.
+5. **Archive** — mark the change as complete with `opsx:archive` after the PR merges.
 
 If asked to implement something that has no open spec:
 - Do NOT write the code.
@@ -62,5 +64,7 @@ If asked to implement something that has no open spec:
 Skills available:
 - Propose: read `.github/skills/openspec-propose/SKILL.md`
 - Apply: read `.github/skills/openspec-apply-change/SKILL.md`
+- Verify: read `.github/skills/openspec-verify/SKILL.md`
+- Document: read `.github/skills/openspec-document/SKILL.md`
 - Archive: read `.github/skills/openspec-archive-change/SKILL.md`
 - Explore: read `.github/skills/openspec-explore/SKILL.md`
