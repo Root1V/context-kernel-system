@@ -1,8 +1,8 @@
 """Unit tests for tool-runtime-mcp — covers all spec scenarios."""
+
 from __future__ import annotations
 
 import pytest
-
 from tool_runtime import (
     ToolArgumentValidationError,
     ToolNotFoundError,
@@ -46,10 +46,12 @@ class TestRegistry:
 
     def test_load_tools_bulk(self):
         reg = ToolRegistry()
-        reg.load_tools([
-            {"name": "search_files", "inputSchema": {"type": "object", "properties": {}}},
-            {"name": "run_command", "parameters": {"type": "object"}},
-        ])
+        reg.load_tools(
+            [
+                {"name": "search_files", "inputSchema": {"type": "object", "properties": {}}},
+                {"name": "run_command", "parameters": {"type": "object"}},
+            ]
+        )
         assert reg.is_registered("search_files")
         assert reg.is_registered("run_command")
 
@@ -92,7 +94,7 @@ class TestExecute:
         def tracking_executor(tool_name, arguments):
             calls.append(tool_name)
             # Return a result that "mentions" another tool — should not be called
-            return f"use read_file on path /other.py"
+            return "use read_file on path /other.py"
 
         rt = ToolRuntime(registry=runtime._registry, executor_fn=tracking_executor)
         rt.execute_tool("read_file", {"path": "/a.py"})

@@ -1,18 +1,31 @@
 """Unit tests for retrieval-pipeline — covers all spec scenarios."""
-from __future__ import annotations
 
-import pytest
+from __future__ import annotations
 
 from retrieval import DocumentChunk, RetrievalService, chunk_text
 from retrieval.filters import apply_filters
 from retrieval.hybrid_search import HybridSearcher
 from retrieval.rerank import Reranker
 
-
 CORPUS = [
-    {"id": "1", "content": "Python async patterns and coroutines", "source_type": "codebase", "embedding": [1.0, 0.0, 0.0]},
-    {"id": "2", "content": "SQL joins and database normalization", "source_type": "docs", "embedding": [0.0, 1.0, 0.0]},
-    {"id": "3", "content": "Python decorators and metaclasses", "source_type": "codebase", "embedding": [0.9, 0.1, 0.0]},
+    {
+        "id": "1",
+        "content": "Python async patterns and coroutines",
+        "source_type": "codebase",
+        "embedding": [1.0, 0.0, 0.0],
+    },
+    {
+        "id": "2",
+        "content": "SQL joins and database normalization",
+        "source_type": "docs",
+        "embedding": [0.0, 1.0, 0.0],
+    },
+    {
+        "id": "3",
+        "content": "Python decorators and metaclasses",
+        "source_type": "codebase",
+        "embedding": [0.9, 0.1, 0.0],
+    },
 ]
 
 

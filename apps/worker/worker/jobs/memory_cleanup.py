@@ -3,8 +3,10 @@
 Scans expired recall entries and promotes them to pgvector archival memory.
 Idempotent: checks for existing ArchivalEntry before inserting.
 """
+
 from __future__ import annotations
 
+import contextlib
 import os
 import sys
 
@@ -25,9 +27,10 @@ def handle_archival_promotion(job: Job) -> Job:
       4. Delete the recall entry.
     """
     try:
+        import datetime
+
         from memory import MemoryService
         from memory.models import ArchivalEntry
-        import datetime
 
         svc = MemoryService()
         session_id = job.session_id
@@ -38,10 +41,8 @@ def handle_archival_promotion(job: Job) -> Job:
         for recall_entry in expired:
             # Idempotency check — skip if already archived
             already_archived = False
-            try:
+            with contextlib.suppress(Exception):
                 already_archived = svc.archival.exists(recall_entry.entry_id)
-            except Exception:
-                pass
 
             if already_archived:
                 continue
@@ -49,10 +50,12 @@ def handle_archival_promotion(job: Job) -> Job:
             # Generate embedding (char/4 heuristic if embedder unavailable)
             embedding: list[float] = []
             try:
-                from model_adapter import count_tokens  # noqa: F401
                 # Real embedding would call an embedding endpoint here.
                 # For now, use a random-seeded vector from content hash.
                 import hashlib
+
+                from model_adapter import count_tokens  # noqa: F401
+
                 h = int(hashlib.md5(recall_entry.content.encode()).hexdigest(), 16)
                 embedding = [((h >> i) & 0xFF) / 255.0 for i in range(1536)]
             except Exception:
@@ -68,10 +71,8 @@ def handle_archival_promotion(job: Job) -> Job:
             svc.archival.add(archival)
 
             # Remove the promoted recall entry
-            try:
+            with contextlib.suppress(Exception):
                 svc.recall.delete(recall_entry.entry_id)
-            except Exception:
-                pass
 
         from datetime import datetime as dt
 

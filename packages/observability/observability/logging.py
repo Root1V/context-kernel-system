@@ -3,6 +3,7 @@
 Call `configure_logging()` once at startup to emit machine-readable JSON logs.
 Packages call `get_logger(__name__)` — which returns a standard `logging.Logger`.
 """
+
 from __future__ import annotations
 
 import json
@@ -24,11 +25,29 @@ class _StructuredFormatter(logging.Formatter):
         # Copy any extra fields injected by trace_node or callers
         for key, value in record.__dict__.items():
             if key not in (
-                "msg", "args", "levelname", "levelno", "pathname", "filename",
-                "module", "exc_info", "exc_text", "stack_info", "lineno",
-                "funcName", "created", "msecs", "relativeCreated", "thread",
-                "threadName", "processName", "process", "name", "message",
-                "taskName", "asctime",
+                "msg",
+                "args",
+                "levelname",
+                "levelno",
+                "pathname",
+                "filename",
+                "module",
+                "exc_info",
+                "exc_text",
+                "stack_info",
+                "lineno",
+                "funcName",
+                "created",
+                "msecs",
+                "relativeCreated",
+                "thread",
+                "threadName",
+                "processName",
+                "process",
+                "name",
+                "message",
+                "taskName",
+                "asctime",
             ):
                 base[key] = value
 
@@ -49,9 +68,7 @@ def configure_logging(level: int = logging.INFO) -> None:
 
     # Avoid adding duplicate handlers on repeated calls
     for h in root.handlers:
-        if isinstance(h, logging.StreamHandler) and isinstance(
-            h.formatter, _StructuredFormatter
-        ):
+        if isinstance(h, logging.StreamHandler) and isinstance(h.formatter, _StructuredFormatter):
             return
 
     handler = logging.StreamHandler(sys.stdout)

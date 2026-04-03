@@ -3,6 +3,7 @@
 Uses SQLAlchemy 2.x async engine with asyncpg driver.
 Connection string is read from the DATABASE_URL environment variable.
 """
+
 from __future__ import annotations
 
 import os
@@ -39,9 +40,7 @@ def init_db(database_url: str | None = None) -> None:
     global _engine, _session_factory
     url = database_url or _build_url()
     _engine = create_async_engine(url, echo=False, pool_pre_ping=True)
-    _session_factory = async_sessionmaker(
-        _engine, expire_on_commit=False, class_=AsyncSession
-    )
+    _session_factory = async_sessionmaker(_engine, expire_on_commit=False, class_=AsyncSession)
 
 
 def get_engine():

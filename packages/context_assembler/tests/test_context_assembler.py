@@ -8,14 +8,13 @@ Covers all spec scenarios:
   - model_id propagates to TokenBudget
   - Concurrent calls do not interfere (stateless)
 """
+
 from __future__ import annotations
 
-import sys
 import os
+import sys
 import threading
 from unittest.mock import patch
-
-import pytest
 
 # Ensure packages directory is on sys.path so imports work without install.
 _PACKAGES = os.path.join(os.path.dirname(__file__), "..", "..")
@@ -26,45 +25,44 @@ from context_assembler import (
     ActiveContext,
     AssemblyInput,
     ContextAssembler,
-    SectionPriority,
     assemble,
 )
 from context_assembler.token_budget import TokenBudget
-
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _make_input(**overrides) -> AssemblyInput:
-    defaults = dict(
-        model_id="gpt-4o",
-        system_instructions="You are a helpful assistant.",
-        core_memory_blocks=["User name: Alice"],
-        state_summary="Task: write tests.",
-        tool_schemas=[{"name": "search", "description": "web search"}],
-        message_buffer=["User: Hello!", "Assistant: Hi there!"],
-        retrieved_chunks=["chunk 1 content", "chunk 2 content"],
-        open_files=["file.py: print('hello')"],
-        response_reserve=0,  # no reserve — easier to reason about in tests
-    )
+    defaults = {
+        "model_id": "gpt-4o",
+        "system_instructions": "You are a helpful assistant.",
+        "core_memory_blocks": ["User name: Alice"],
+        "state_summary": "Task: write tests.",
+        "tool_schemas": [{"name": "search", "description": "web search"}],
+        "message_buffer": ["User: Hello!", "Assistant: Hi there!"],
+        "retrieved_chunks": ["chunk 1 content", "chunk 2 content"],
+        "open_files": ["file.py: print('hello')"],
+        "response_reserve": 0,  # no reserve — easier to reason about in tests
+    }
     defaults.update(overrides)
     return AssemblyInput(**defaults)
 
 
 def _tiny_input(**overrides) -> AssemblyInput:
     """Input designed to exceed a small token budget."""
-    defaults = dict(
-        model_id="gpt-4o",
-        system_instructions="sys",
-        core_memory_blocks=["mem"],
-        state_summary="state",
-        tool_schemas=[{"n": "t"}],
-        message_buffer=["msg"],
-        retrieved_chunks=["chunk"],
-        open_files=["file"],
-        response_reserve=0,
-    )
+    defaults = {
+        "model_id": "gpt-4o",
+        "system_instructions": "sys",
+        "core_memory_blocks": ["mem"],
+        "state_summary": "state",
+        "tool_schemas": [{"n": "t"}],
+        "message_buffer": ["msg"],
+        "retrieved_chunks": ["chunk"],
+        "open_files": ["file"],
+        "response_reserve": 0,
+    }
     defaults.update(overrides)
     return AssemblyInput(**defaults)
 
@@ -72,6 +70,7 @@ def _tiny_input(**overrides) -> AssemblyInput:
 # ---------------------------------------------------------------------------
 # Scenario: Full assembly within budget
 # ---------------------------------------------------------------------------
+
 
 class TestFullAssemblyWithinBudget:
     def test_all_sections_included(self):
@@ -104,6 +103,7 @@ class TestFullAssemblyWithinBudget:
 # Scenario: Budget exceeded — low-priority sections dropped first
 # ---------------------------------------------------------------------------
 
+
 class TestBudgetTruncation:
     def test_retrieved_chunks_dropped_first(self):
         # Patch context limit to something very small so truncation is forced.
@@ -131,6 +131,7 @@ class TestBudgetTruncation:
 # ---------------------------------------------------------------------------
 # Scenario: Pinned sections survive critical budget
 # ---------------------------------------------------------------------------
+
 
 class TestPinnedSectionsNeverDropped:
     def test_system_instructions_pinned(self):
@@ -161,6 +162,7 @@ class TestPinnedSectionsNeverDropped:
 # Scenario: Section ordering is deterministic
 # ---------------------------------------------------------------------------
 
+
 class TestDeterministicOrdering:
     def test_same_input_same_output(self):
         inp = _make_input()
@@ -184,6 +186,7 @@ class TestDeterministicOrdering:
 # Scenario: model_id flows through to TokenBudget
 # ---------------------------------------------------------------------------
 
+
 class TestModelIdPropagation:
     def test_model_id_in_result(self):
         inp = _make_input(model_id="claude-3-5-sonnet-20241022")
@@ -191,7 +194,9 @@ class TestModelIdPropagation:
         assert result.model_id == "claude-3-5-sonnet-20241022"
 
     def test_token_budget_uses_model_id(self):
-        with patch("context_assembler.token_budget.TokenBudget.context_limit", return_value=128000) as mock_limit:
+        with patch(
+            "context_assembler.token_budget.TokenBudget.context_limit", return_value=128000
+        ) as mock_limit:
             inp = _make_input(model_id="gpt-4o", response_reserve=0)
             assemble(inp)
         mock_limit.assert_called()
@@ -200,6 +205,7 @@ class TestModelIdPropagation:
 # ---------------------------------------------------------------------------
 # Scenario: Concurrent assembly calls do not interfere (stateless)
 # ---------------------------------------------------------------------------
+
 
 class TestStatelessConcurrency:
     def test_concurrent_calls_independent(self):
@@ -234,6 +240,7 @@ class TestStatelessConcurrency:
 # ---------------------------------------------------------------------------
 # Edge cases
 # ---------------------------------------------------------------------------
+
 
 class TestEdgeCases:
     def test_empty_optional_sections(self):

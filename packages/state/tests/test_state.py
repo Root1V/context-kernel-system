@@ -1,10 +1,10 @@
 """Unit tests for state — covers all spec scenarios."""
+
 from __future__ import annotations
 
 from uuid import uuid4
 
 import pytest
-
 from state import (
     SessionStatePatch,
     StateService,

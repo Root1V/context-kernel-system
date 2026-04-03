@@ -13,8 +13,8 @@ from .base import (
     FinishReason,
     ModelResponse,
     RateLimitError,
-    ToolCall,
     TokenUsage,
+    ToolCall,
     UnsupportedModelError,
 )
 from .limits import get_context_limit, is_anthropic
@@ -34,9 +34,7 @@ class AnthropicAdapter:
             raise UnsupportedModelError(model_id)
 
         if anthropic is None:  # pragma: no cover
-            raise RuntimeError(
-                "anthropic package is required. Install with: pip install anthropic"
-            )
+            raise RuntimeError("anthropic package is required. Install with: pip install anthropic")
 
         client = anthropic.Anthropic()
 
@@ -63,9 +61,7 @@ class AnthropicAdapter:
             response = client.messages.create(**kwargs)
         except _AnthRateLimit as exc:
             retry_after = float(
-                getattr(exc, "retry_after_seconds", None)
-                or getattr(exc, "retry_after", None)
-                or 0
+                getattr(exc, "retry_after_seconds", None) or getattr(exc, "retry_after", None) or 0
             )
             raise RateLimitError(retry_after_seconds=retry_after) from exc
 

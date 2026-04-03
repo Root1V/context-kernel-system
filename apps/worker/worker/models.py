@@ -1,9 +1,10 @@
 """Job Pydantic model — schema-backed, persisted before execution."""
+
 from __future__ import annotations
 
 import uuid
 from datetime import datetime
-from enum import auto, Enum
+from enum import Enum
 from typing import Any, Optional
 
 from pydantic import BaseModel, Field
@@ -23,6 +24,7 @@ class JobType(str, Enum):
 
 class Job(BaseModel):
     """A background job dispatched by the orchestrator and claimed by the worker."""
+
     job_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     job_type: JobType
     session_id: str

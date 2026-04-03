@@ -3,14 +3,15 @@
 The orchestrator is the ONLY caller of this gateway.
 This module MUST NOT self-invoke or initiate chained tool calls.
 """
+
 from __future__ import annotations
 
 from typing import Any, Optional
 
 from pydantic import BaseModel
 
-from .registry import ToolNotFoundError, ToolRegistry
-from .safety import ToolArgumentValidationError, validate_arguments
+from .registry import ToolRegistry
+from .safety import validate_arguments
 
 
 class ToolResult(BaseModel):
@@ -39,9 +40,7 @@ class ToolRuntime:
         self._executor_fn = executor_fn
         self._max_output_tokens = max_output_tokens
 
-    def execute_tool(
-        self, tool_name: str, arguments: dict[str, Any]
-    ) -> ToolResult:
+    def execute_tool(self, tool_name: str, arguments: dict[str, Any]) -> ToolResult:
         """Execute a tool synchronously after safety validation.
 
         Raises:

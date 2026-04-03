@@ -1,4 +1,5 @@
 """Metadata pre-filtering for candidate documents before BM25/vector search."""
+
 from __future__ import annotations
 
 from typing import Any

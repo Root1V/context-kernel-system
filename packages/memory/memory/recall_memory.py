@@ -1,10 +1,11 @@
 """Recall memory — bounded recency log of recent events."""
+
 from __future__ import annotations
 
 from datetime import datetime, timedelta
 from uuid import UUID
 
-from .models import RecallEntry, RecallEntryType
+from .models import RecallEntry
 
 
 class RecallMemoryService:
@@ -24,9 +25,7 @@ class RecallMemoryService:
         self._store.setdefault(key, []).append(entry)
         return entry
 
-    def get_entries(
-        self, session_id: UUID, *, include_expired: bool = False
-    ) -> list[RecallEntry]:
+    def get_entries(self, session_id: UUID, *, include_expired: bool = False) -> list[RecallEntry]:
         entries = self._store.get(str(session_id), [])
         if include_expired:
             return list(entries)
@@ -40,6 +39,4 @@ class RecallMemoryService:
 
     def remove_entry(self, session_id: UUID, entry_id: UUID) -> None:
         key = str(session_id)
-        self._store[key] = [
-            e for e in self._store.get(key, []) if e.id != entry_id
-        ]
+        self._store[key] = [e for e in self._store.get(key, []) if e.id != entry_id]

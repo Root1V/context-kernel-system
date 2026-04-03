@@ -1,4 +1,5 @@
 """storage — public interface for database access."""
+
 from __future__ import annotations
 
 from .db import Base, get_session, init_db

@@ -1,4 +1,5 @@
 """Section builder — system instructions (pinned, top priority)."""
+
 from __future__ import annotations
 
 from ..assembler import PromptSection, SectionPriority

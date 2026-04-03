@@ -3,10 +3,11 @@
 Delegates all counting and limit lookups to `model_adapter` so that token
 limits are never hard-coded here.
 """
+
 from __future__ import annotations
 
-import sys
 import os
+import sys
 
 # Allow importing model_adapter from the monorepo packages directory.
 _PACKAGES_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "..", "..")
@@ -20,7 +21,9 @@ class TokenBudget:
     def __init__(self, model_id: str) -> None:
         self._model_id = model_id
         try:
-            from model_adapter import count_tokens as _count, get_context_limit as _limit
+            from model_adapter import count_tokens as _count
+            from model_adapter import get_context_limit as _limit
+
             self._count = _count
             self._limit_fn = _limit
         except ImportError:

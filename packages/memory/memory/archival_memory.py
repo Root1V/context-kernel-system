@@ -1,4 +1,5 @@
 """Archival memory — vectorized long-term storage with semantic search."""
+
 from __future__ import annotations
 
 import math

@@ -1,4 +1,5 @@
 """Repository for core memory blocks, recall entries, and archival entries."""
+
 from __future__ import annotations
 
 import uuid
@@ -56,9 +57,7 @@ class RecallRepository:
         return entry
 
     async def delete(self, entry_id: uuid.UUID) -> None:
-        await self._db.execute(
-            delete(RecallEntry).where(RecallEntry.id == entry_id)
-        )
+        await self._db.execute(delete(RecallEntry).where(RecallEntry.id == entry_id))
         await self._db.flush()
 
 

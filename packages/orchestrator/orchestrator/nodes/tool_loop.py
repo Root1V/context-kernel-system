@@ -6,6 +6,7 @@ Loop logic:
   3. Append tool results to assembled_messages and call infer() again.
   4. Repeat up to max_tool_iterations.
 """
+
 from __future__ import annotations
 
 from ..models import RuntimeState
@@ -13,12 +14,13 @@ from ..models import RuntimeState
 try:
     from model_adapter import complete
 except ImportError:
-    complete = None  # type: ignore[assignment]
+    complete = None  # type: ignore[assignment,misc]
 
 try:
-    from tool_runtime import ToolRuntime
+    from tool_runtime import ToolRegistry, ToolRuntime
 except ImportError:
-    ToolRuntime = None  # type: ignore[assignment]
+    ToolRegistry = None  # type: ignore[assignment,misc]
+    ToolRuntime = None  # type: ignore[assignment,misc]
 
 
 def tool_loop(state: RuntimeState) -> RuntimeState:
@@ -37,28 +39,34 @@ def tool_loop(state: RuntimeState) -> RuntimeState:
         # Execute each tool call.
         tool_results: list[dict] = []
         try:
-            if ToolRuntime is None:
+            if ToolRuntime is None or ToolRegistry is None:
                 raise ImportError("tool_runtime not installed")
-            runtime = ToolRuntime()
+            runtime = ToolRuntime(registry=ToolRegistry())
             for call in tool_calls:
                 name = call.get("name") or call.get("function", {}).get("name", "")
                 args = call.get("arguments") or call.get("function", {}).get("arguments", {})
                 result = runtime.execute_tool(name, args)
-                tool_results.append({
-                    "tool_call_id": call.get("id", name),
-                    "role": "tool",
-                    "content": result.output,
-                })
-                state.tool_results_log.append({
-                    "iteration": state.tool_iterations,
-                    "tool": name,
-                    "success": result.success,
-                })
+                tool_results.append(
+                    {
+                        "tool_call_id": call.get("id", name),
+                        "role": "tool",
+                        "content": result.output,
+                    }
+                )
+                state.tool_results_log.append(
+                    {
+                        "iteration": state.tool_iterations,
+                        "tool": name,
+                        "success": result.status == "success",
+                    }
+                )
         except Exception as exc:
-            tool_results.append({
-                "role": "tool",
-                "content": f"[tool error: {exc}]",
-            })
+            tool_results.append(
+                {
+                    "role": "tool",
+                    "content": f"[tool error: {exc}]",
+                }
+            )
 
         # Append tool results to message list and re-infer.
         state.assembled_messages.extend(tool_results)

@@ -3,6 +3,7 @@
 This node is conditional: if `state.retrieval_needed` is False, it is skipped
 and `state.retrieved_chunks` remains an empty list.
 """
+
 from __future__ import annotations
 
 from ..models import RuntimeState
@@ -16,6 +17,7 @@ def retrieve_context(state: RuntimeState) -> RuntimeState:
 
     try:
         from retrieval import RetrievalService
+
         svc = RetrievalService()
         chunks = svc.search(query=state.turn_request.user_message, top_k=5)
         state.retrieved_chunks = [c.content for c in chunks]

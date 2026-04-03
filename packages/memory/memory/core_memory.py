@@ -1,4 +1,5 @@
 """Core memory service — always-in-prompt, token-bounded memory blocks."""
+
 from __future__ import annotations
 
 from uuid import UUID
@@ -47,6 +48,4 @@ class CoreMemoryService:
 
     def remove_block(self, session_id: UUID, block_id: UUID) -> None:
         key = str(session_id)
-        self._store[key] = [
-            b for b in self._store.get(key, []) if b.id != block_id
-        ]
+        self._store[key] = [b for b in self._store.get(key, []) if b.id != block_id]

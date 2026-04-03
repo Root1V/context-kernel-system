@@ -1,4 +1,5 @@
 """memory — unified public interface for the four-layer memory model."""
+
 from __future__ import annotations
 
 import logging

@@ -3,9 +3,10 @@
 This node is the first step of the DAG. It validates the incoming data and
 prepares the initial RuntimeState for downstream nodes.
 """
+
 from __future__ import annotations
 
-from ..models import RuntimeState, TurnRequest
+from ..models import RuntimeState
 
 
 def receive_request(state: RuntimeState) -> RuntimeState:

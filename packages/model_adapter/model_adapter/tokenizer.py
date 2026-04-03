@@ -27,8 +27,7 @@ def count_tokens(text: str, model_id: str) -> int:
 def _count_tiktoken(text: str, model_id: str) -> int:
     if tiktoken is None:  # pragma: no cover
         raise RuntimeError(
-            "tiktoken is required for OpenAI token counting. "
-            "Install it with: pip install tiktoken"
+            "tiktoken is required for OpenAI token counting. Install it with: pip install tiktoken"
         )
     try:
         encoding = tiktoken.encoding_for_model(model_id)

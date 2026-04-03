@@ -1,4 +1,5 @@
 """Section builder — core memory blocks (pinned)."""
+
 from __future__ import annotations
 
 from ..assembler import PromptSection, SectionPriority

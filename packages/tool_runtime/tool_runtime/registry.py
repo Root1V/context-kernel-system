@@ -1,4 +1,5 @@
 """Tool registry — loads and stores MCP tool schemas at startup."""
+
 from __future__ import annotations
 
 from typing import Any

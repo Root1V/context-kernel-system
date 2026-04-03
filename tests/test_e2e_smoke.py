@@ -13,15 +13,15 @@ The test verifies:
   3. The orchestrator marks the turn as `ok` (not tool_limit_reached or error).
   4. Memory and state services are exercised without exceptions.
 """
+
 from __future__ import annotations
 
-import sys
 import os
+import sys
+from collections.abc import Generator
 from contextlib import contextmanager
-from typing import Any, Generator
+from typing import Any
 from unittest.mock import MagicMock
-
-import pytest
 
 # ---------------------------------------------------------------------------
 # sys.path: make all packages importable
@@ -40,11 +40,13 @@ for _p in [_PACKAGES, _ORCHESTRATOR_PKG]:
 # Fake providers injected into sys.modules before any package imports them
 # ---------------------------------------------------------------------------
 
+
 def _build_fake_model_adapter() -> MagicMock:
     """Return a fake model_adapter module whose complete() echoes the prompt."""
 
     def _complete(model_id: str, messages: list[dict[str, Any]], **kw):
         last_content = messages[-1].get("content", "") if messages else ""
+
         # Return a real object (not MagicMock) so model_dump() works correctly
         class _FakeResponse:
             content = f"Echo ({model_id}): {str(last_content)[:50]}"
@@ -111,6 +113,7 @@ def _inject_fake_modules() -> Generator[None, None, None]:
 # Import orchestrator inside the fake-module context
 # ---------------------------------------------------------------------------
 
+
 class TestEndToEndTurn:
     """Full-path smoke tests: API → orchestrator → all packages → response."""
 
@@ -121,12 +124,15 @@ class TestEndToEndTurn:
 
             # Force reload of the nodes that do module-level optional imports
             import orchestrator.nodes.call_model as call_model_mod
+
             importlib.reload(call_model_mod)
 
             import orchestrator.graph as graph_mod
+
             importlib.reload(graph_mod)
 
             import orchestrator as orch_mod
+
             importlib.reload(orch_mod)
 
             from orchestrator import TurnRequest, orchestrate
@@ -152,10 +158,16 @@ class TestEndToEndTurn:
     def test_orchestrator_status_ok(self):
         with _inject_fake_modules():
             import importlib
-            import orchestrator.nodes.call_model as cm; importlib.reload(cm)
-            import orchestrator.graph as gm; importlib.reload(gm)
-            import orchestrator as om; importlib.reload(om)
+
+            import orchestrator as om
+            import orchestrator.graph as gm
+            import orchestrator.nodes.call_model as cm
+
+            importlib.reload(cm)
+            importlib.reload(gm)
+            importlib.reload(om)
             from orchestrator import TurnRequest, TurnStatus, orchestrate
+
             req = TurnRequest(session_id="s3", turn_id="t3", user_message="Ping", model_id="gpt-4o")
             response = orchestrate(req)
         assert response.status == TurnStatus.ok
@@ -168,17 +180,24 @@ class TestEndToEndTurn:
         """assemble_context node must appear in completed_nodes after a turn."""
         with _inject_fake_modules():
             import importlib
-            import orchestrator.nodes.call_model as cm; importlib.reload(cm)
-            import orchestrator.graph as gm; importlib.reload(gm)
-            import orchestrator as om; importlib.reload(om)
+
+            import orchestrator as om
+            import orchestrator.graph as gm
+            import orchestrator.nodes.call_model as cm
+
+            importlib.reload(cm)
+            importlib.reload(gm)
+            importlib.reload(om)
 
             from orchestrator import TurnRequest
             from orchestrator.graph import _run_sequential
             from orchestrator.models import RuntimeState
 
             req = TurnRequest(
-                session_id="s5", turn_id="t5",
-                user_message="Test context assembly", model_id="gpt-4o",
+                session_id="s5",
+                turn_id="t5",
+                user_message="Test context assembly",
+                model_id="gpt-4o",
             )
             initial_state = RuntimeState(
                 turn_request=req,

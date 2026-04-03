@@ -3,6 +3,7 @@
 All other packages MUST import exclusively from this module, never from
 internal submodules (e.g. openai_adapter, anthropic_adapter).
 """
+
 from __future__ import annotations
 
 from typing import Any
@@ -12,8 +13,8 @@ from .base import (
     FinishReason,
     ModelResponse,
     RateLimitError,
-    ToolCall,
     TokenUsage,
+    ToolCall,
     UnsupportedModelError,
 )
 from .limits import get_context_limit, supported_models

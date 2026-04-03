@@ -11,13 +11,12 @@ Spec scenarios covered:
   - Retrieval skip when retrieval_needed=False
   - Checkpoint resume (completed_nodes tracking)
 """
+
 from __future__ import annotations
 
-import sys
 import os
+import sys
 from unittest.mock import MagicMock, patch
-
-import pytest
 
 # Add orchestrator package root to path so 'import orchestrator' works correctly.
 # Must point to packages/orchestrator (not packages) to avoid module shadowing.
@@ -30,22 +29,22 @@ _PACKAGES = os.path.join(os.path.dirname(__file__), "..", "..")
 if _PACKAGES not in sys.path:
     sys.path.append(_PACKAGES)
 
-from orchestrator.graph import orchestrate, _run_sequential
+from orchestrator.graph import _run_sequential, orchestrate
 from orchestrator.models import RuntimeState, TurnRequest, TurnStatus
-
 
 # ---------------------------------------------------------------------------
 # Fixtures / helpers
 # ---------------------------------------------------------------------------
 
+
 def _make_request(**overrides) -> TurnRequest:
-    defaults = dict(
-        session_id="sess-1",
-        user_message="What is the capital of France?",
-        model_id="gpt-4o",
-        max_tool_iterations=3,
-        retrieval_needed=False,  # skip retrieval by default for speed
-    )
+    defaults = {
+        "session_id": "sess-1",
+        "user_message": "What is the capital of France?",
+        "model_id": "gpt-4o",
+        "max_tool_iterations": 3,
+        "retrieval_needed": False,  # skip retrieval by default for speed
+    }
     defaults.update(overrides)
     return TurnRequest(**defaults)
 
@@ -66,10 +65,13 @@ def _mock_model_response(content="Paris.", tool_calls=None):
 # Scenario: Happy-path turn completes without tool calls
 # ---------------------------------------------------------------------------
 
+
 class TestHappyPath:
     def test_returns_turn_response(self):
         req = _make_request()
-        with patch("orchestrator.nodes.call_model.complete", return_value=_mock_model_response("Paris.")):
+        with patch(
+            "orchestrator.nodes.call_model.complete", return_value=_mock_model_response("Paris.")
+        ):
             result = orchestrate(req)
 
         assert result.session_id == "sess-1"
@@ -90,9 +92,11 @@ class TestHappyPath:
 
         assert result.tool_calls_made == 0
 
+
 # ---------------------------------------------------------------------------
 # Scenario: Tool-call loop executes and resolves
 # ---------------------------------------------------------------------------
+
 
 class TestToolCallLoop:
     def test_tool_loop_runs_and_resolves(self):
@@ -112,18 +116,22 @@ class TestToolCallLoop:
         mock_result.output = "search result: Paris"
         mock_result.success = True
 
-        with patch("orchestrator.nodes.call_model.complete", side_effect=_side_effect):
-            with patch("orchestrator.nodes.tool_loop.complete", side_effect=_side_effect):
-                with patch("orchestrator.nodes.tool_loop.ToolRuntime") as MockRuntime:
-                    MockRuntime.return_value.execute_tool.return_value = mock_result
-                    result = orchestrate(req)
+        with (
+            patch("orchestrator.nodes.call_model.complete", side_effect=_side_effect),
+            patch("orchestrator.nodes.tool_loop.complete", side_effect=_side_effect),
+            patch("orchestrator.nodes.tool_loop.ToolRuntime") as MockRuntime,
+        ):
+            MockRuntime.return_value.execute_tool.return_value = mock_result
+            result = orchestrate(req)
 
         assert result.status == TurnStatus.ok
         assert result.tool_calls_made >= 1
 
+
 # ---------------------------------------------------------------------------
 # Scenario: Max tool iterations reached
 # ---------------------------------------------------------------------------
+
 
 class TestMaxToolIterations:
     def test_status_tool_limit_reached(self):
@@ -135,17 +143,21 @@ class TestMaxToolIterations:
         mock_result.output = "still looping"
         mock_result.success = True
 
-        with patch("orchestrator.nodes.call_model.complete", return_value=always_tool):
-            with patch("orchestrator.nodes.tool_loop.complete", return_value=always_tool):
-                with patch("orchestrator.nodes.tool_loop.ToolRuntime") as MockRuntime:
-                    MockRuntime.return_value.execute_tool.return_value = mock_result
-                    result = orchestrate(req)
+        with (
+            patch("orchestrator.nodes.call_model.complete", return_value=always_tool),
+            patch("orchestrator.nodes.tool_loop.complete", return_value=always_tool),
+            patch("orchestrator.nodes.tool_loop.ToolRuntime") as MockRuntime,
+        ):
+            MockRuntime.return_value.execute_tool.return_value = mock_result
+            result = orchestrate(req)
 
         assert result.status == TurnStatus.tool_limit_reached
+
 
 # ---------------------------------------------------------------------------
 # Scenario: Retrieval skip when retrieval_needed=False
 # ---------------------------------------------------------------------------
+
 
 class TestRetrievalSkip:
     def test_retrieve_context_not_called_when_skipped(self):
@@ -171,6 +183,7 @@ class TestRetrievalSkip:
 # Scenario: Checkpoint resume (completed_nodes tracking)
 # ---------------------------------------------------------------------------
 
+
 class TestCheckpointResume:
     def test_completed_nodes_populated(self):
         req = _make_request()
@@ -193,9 +206,11 @@ class TestCheckpointResume:
 
         assert "retrieve_context" in final.completed_nodes
 
+
 # ---------------------------------------------------------------------------
 # Unit: RuntimeState model
 # ---------------------------------------------------------------------------
+
 
 class TestRuntimeState:
     def test_default_state_fields(self):

@@ -3,6 +3,7 @@
 Loads the compaction_template.md prompt, summarizes old message buffer turns via
 model_adapter, and writes a RecallEntry via MemoryService.
 """
+
 from __future__ import annotations
 
 import os
@@ -16,7 +17,14 @@ if _PACKAGES not in sys.path:
     sys.path.insert(0, _PACKAGES)
 
 _TEMPLATE_PATH = os.path.join(
-    os.path.dirname(__file__), "..", "..", "..", "..", "prompts", "summaries", "compaction_template.md"
+    os.path.dirname(__file__),
+    "..",
+    "..",
+    "..",
+    "..",
+    "prompts",
+    "summaries",
+    "compaction_template.md",
 )
 
 
@@ -49,6 +57,7 @@ def handle_compaction(job: Job) -> Job:
         summary_text = ""
         try:
             from model_adapter import complete
+
             response = complete(
                 model_id=job.payload.get("model_id", "gpt-4o"),
                 messages=[{"role": "user", "content": prompt}],
@@ -60,9 +69,10 @@ def handle_compaction(job: Job) -> Job:
 
         # Write recall entry
         try:
+            import datetime
+
             from memory import MemoryService
             from memory.models import RecallEntry, RecallEntryType
-            import datetime
 
             svc = MemoryService()
             entry = RecallEntry(

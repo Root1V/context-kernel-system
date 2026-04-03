@@ -21,15 +21,13 @@ _VALID_TRANSITIONS: dict[TaskStatus, set[TaskStatus]] = {
     TaskStatus.running: {TaskStatus.blocked, TaskStatus.complete, TaskStatus.failed},
     TaskStatus.blocked: {TaskStatus.running, TaskStatus.failed},
     TaskStatus.complete: set(),  # terminal
-    TaskStatus.failed: set(),    # terminal
+    TaskStatus.failed: set(),  # terminal
 }
 
 
 class StateTransitionError(Exception):
     def __init__(self, from_status: TaskStatus, to_status: TaskStatus) -> None:
-        super().__init__(
-            f"Invalid task state transition: {from_status!r} -> {to_status!r}"
-        )
+        super().__init__(f"Invalid task state transition: {from_status!r} -> {to_status!r}")
         self.from_status = from_status
         self.to_status = to_status
 

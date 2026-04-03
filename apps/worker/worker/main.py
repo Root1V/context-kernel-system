@@ -7,6 +7,7 @@ outside the turn-time API path.
 Usage:
     python -m apps.worker.worker.main
 """
+
 from __future__ import annotations
 
 import logging
@@ -14,9 +15,9 @@ import time
 from datetime import datetime
 from typing import Optional
 
-from .models import Job, JobStatus, JobType
 from .jobs.compaction import handle_compaction
 from .jobs.memory_cleanup import handle_archival_promotion
+from .models import Job, JobStatus, JobType
 
 logger = logging.getLogger(__name__)
 

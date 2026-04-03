@@ -1,4 +1,5 @@
 """Section builder — open files / workspace artifacts."""
+
 from __future__ import annotations
 
 from ..assembler import PromptSection, SectionPriority

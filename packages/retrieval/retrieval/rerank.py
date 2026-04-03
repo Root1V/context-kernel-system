@@ -3,6 +3,7 @@
 In production, uses a sentence-transformer cross-encoder model.
 Falls back to BM25-style keyword overlap scoring when the model is unavailable.
 """
+
 from __future__ import annotations
 
 from typing import Any
@@ -30,6 +31,7 @@ class Reranker:
         if model_name:
             try:
                 from sentence_transformers import CrossEncoder
+
                 self._model = CrossEncoder(model_name)
             except ImportError:
                 pass  # Fallback to keyword scoring
@@ -47,13 +49,14 @@ class Reranker:
         if self._model is not None:
             pairs = [(query, c.get(self._text_key, "")) for c in candidates]
             scores = self._model.predict(pairs)
-            ranked = sorted(
-                zip(scores, candidates), key=lambda x: x[0], reverse=True
-            )
+            ranked = sorted(zip(scores, candidates), key=lambda x: x[0], reverse=True)
             result = [{**c, "_rerank_score": float(s)} for s, c in ranked]
         else:
             result = sorted(
-                [{**c, "_rerank_score": _keyword_overlap_score(query, c.get(self._text_key, ""))} for c in candidates],
+                [
+                    {**c, "_rerank_score": _keyword_overlap_score(query, c.get(self._text_key, ""))}
+                    for c in candidates
+                ],
                 key=lambda x: x["_rerank_score"],
                 reverse=True,
             )

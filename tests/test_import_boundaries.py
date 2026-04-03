@@ -9,13 +9,11 @@ internal submodule. The invariant is:
 This test uses ast.parse to statically analyse import statements without
 executing any code, so it runs even when optional dependencies are absent.
 """
+
 from __future__ import annotations
 
 import ast
-import os
-import sys
 from pathlib import Path
-from typing import List, Tuple
 
 import pytest
 
@@ -25,7 +23,7 @@ _PACKAGES_DIR = _REPO_ROOT / "packages"
 
 # Names of all top-level packages (the importable names, not the directory names)
 # Directory layout: packages/<dir>/<pkg_name>/  (dir and pkg_name may differ by _)
-_KNOWN_PACKAGES: List[str] = [
+_KNOWN_PACKAGES: list[str] = [
     p.name
     for pkg_dir in _PACKAGES_DIR.iterdir()
     if pkg_dir.is_dir()
@@ -34,19 +32,19 @@ _KNOWN_PACKAGES: List[str] = [
 ]
 
 
-def _collect_python_files(pkg_dir: Path) -> List[Path]:
+def _collect_python_files(pkg_dir: Path) -> list[Path]:
     """Return all .py files under a package directory."""
     return sorted(pkg_dir.rglob("*.py"))
 
 
-def _extract_imports(source: str) -> List[Tuple[str, str]]:
+def _extract_imports(source: str) -> list[tuple[str, str]]:
     """Parse source and return (module, alias) tuples for all imports."""
     try:
         tree = ast.parse(source)
     except SyntaxError:
         return []
 
-    imports: List[Tuple[str, str]] = []
+    imports: list[tuple[str, str]] = []
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):
             for alias in node.names:
@@ -60,7 +58,7 @@ def _extract_imports(source: str) -> List[Tuple[str, str]]:
 def _is_cross_package_internal_import(
     importing_package: str,
     imported_module: str,
-    all_packages: List[str],
+    all_packages: list[str],
 ) -> bool:
     """Return True if the import is a cross-package internal submodule import.
 
@@ -95,9 +93,10 @@ def _humanize_path(path: Path) -> str:
 # Build violation list at module load time for parametrize
 # ---------------------------------------------------------------------------
 
-def _find_violations() -> List[Tuple[str, str, str]]:
+
+def _find_violations() -> list[tuple[str, str, str]]:
     """Return list of (file_path, violating_package, import_string) tuples."""
-    violations: List[Tuple[str, str, str]] = []
+    violations: list[tuple[str, str, str]] = []
 
     for pkg_dir in _PACKAGES_DIR.iterdir():
         if not pkg_dir.is_dir():
@@ -141,13 +140,13 @@ _VIOLATIONS = _find_violations()
 class TestImportBoundaries:
     def test_no_known_packages_exist(self):
         """Sanity: the packages directory must contain at least 5 packages."""
-        assert len(_KNOWN_PACKAGES) >= 5, (
-            f"Expected at least 5 packages, found: {_KNOWN_PACKAGES}"
-        )
+        assert len(_KNOWN_PACKAGES) >= 5, f"Expected at least 5 packages, found: {_KNOWN_PACKAGES}"
 
-    @pytest.mark.parametrize("violation", _VIOLATIONS, ids=[
-        f"{v[0]}::{v[2]}" for v in _VIOLATIONS
-    ] if _VIOLATIONS else ["no_violations"])
+    @pytest.mark.parametrize(
+        "violation",
+        _VIOLATIONS,
+        ids=[f"{v[0]}::{v[2]}" for v in _VIOLATIONS] if _VIOLATIONS else ["no_violations"],
+    )
     def test_no_cross_package_internal_imports(self, violation):
         """Each parametrized case is a detected boundary violation."""
         file_path, importing_pkg, imported_module = violation

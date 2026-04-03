@@ -1,4 +1,5 @@
 """Hybrid BM25 + vector search with score fusion and deduplication."""
+
 from __future__ import annotations
 
 import math
@@ -25,7 +26,7 @@ def _bm25_score(
     avg_len = sum(doc_lengths) / len(doc_lengths) if doc_lengths else 1
     dl = len(doc_terms)
     score = 0.0
-    term_freq = {}
+    term_freq: dict[str, int] = {}
     for t in doc_terms:
         term_freq[t] = term_freq.get(t, 0) + 1
 

@@ -11,11 +11,12 @@ Conditional edges:
 Public API:
   orchestrate(turn_request: TurnRequest) -> TurnResponse
 """
+
 from __future__ import annotations
 
-import sys
-import os
 import logging
+import os
+import sys
 
 from .models import RuntimeState, TurnRequest, TurnResponse
 from .nodes import (
@@ -51,6 +52,7 @@ except ImportError:  # pragma: no cover
 # Conditional routing helpers
 # ---------------------------------------------------------------------------
 
+
 def _should_retrieve(state: RuntimeState) -> str:
     return "retrieve_context" if state.retrieval_needed else "assemble_context"
 
@@ -67,9 +69,10 @@ def _should_tool_loop(state: RuntimeState) -> str:
 # Graph construction (lazy import of langgraph so tests can patch it)
 # ---------------------------------------------------------------------------
 
+
 def _build_graph():
     """Build and compile the LangGraph StateGraph."""
-    from langgraph.graph import StateGraph, END
+    from langgraph.graph import END, StateGraph
 
     builder = StateGraph(RuntimeState)
 
@@ -121,6 +124,7 @@ def _build_graph():
 # Public entry point
 # ---------------------------------------------------------------------------
 
+
 def orchestrate(turn_request: TurnRequest) -> TurnResponse:
     """Run a full Turn-Time DAG pass and return the TurnResponse.
 
@@ -166,10 +170,7 @@ def _run_sequential(state: RuntimeState) -> RuntimeState:
         state = infer(state)
     # Simple tool loop without graph routing
     iterations = 0
-    while (
-        state.last_model_response.get("tool_calls")
-        and iterations < req.max_tool_iterations
-    ):
+    while state.last_model_response.get("tool_calls") and iterations < req.max_tool_iterations:
         with _trace_node("tool_loop", session_id=sid, iteration=iterations):
             state = tool_loop(state)
         iterations += 1

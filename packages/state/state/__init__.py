@@ -1,4 +1,5 @@
 """state — public interface for session, task, and open-files state management."""
+
 from __future__ import annotations
 
 from .open_files_state import OpenFileEntry, OpenFilesState

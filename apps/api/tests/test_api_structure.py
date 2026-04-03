@@ -2,10 +2,10 @@
 
 These tests do NOT require fastapi and always run.
 """
+
 from __future__ import annotations
 
 import os
-
 
 ROUTES_DIR = os.path.join(os.path.dirname(__file__), "..", "app", "routes")
 FORBIDDEN_IMPORTS = ["context_assembler", "memory.service", "retrieval.service"]

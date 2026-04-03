@@ -1,4 +1,5 @@
 """Session and session-state repository."""
+
 from __future__ import annotations
 
 import uuid

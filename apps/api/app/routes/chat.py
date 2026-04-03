@@ -3,10 +3,11 @@
 This route MUST NOT contain context-assembly, memory, or retrieval logic.
 All processing is delegated to the orchestrator.
 """
+
 from __future__ import annotations
 
-import sys
 import os
+import sys
 
 from fastapi import APIRouter, HTTPException
 
@@ -32,7 +33,7 @@ async def chat(request: ChatRequest) -> ChatResponse:
     try:
         from orchestrator import TurnRequest, orchestrate
     except ImportError as exc:
-        raise HTTPException(status_code=503, detail=f"Orchestrator not available: {exc}")
+        raise HTTPException(status_code=503, detail=f"Orchestrator not available: {exc}") from exc
 
     turn_req = TurnRequest(
         session_id=request.session_id,

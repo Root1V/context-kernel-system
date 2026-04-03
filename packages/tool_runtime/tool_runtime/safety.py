@@ -1,4 +1,5 @@
 """Safety validation layer — validates tool arguments against JSON schema."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -6,9 +7,7 @@ from typing import Any
 
 class ToolArgumentValidationError(Exception):
     def __init__(self, tool_name: str, errors: list[str]) -> None:
-        super().__init__(
-            f"Argument validation failed for tool {tool_name!r}: {'; '.join(errors)}"
-        )
+        super().__init__(f"Argument validation failed for tool {tool_name!r}: {'; '.join(errors)}")
         self.tool_name = tool_name
         self.errors = errors
 
@@ -25,6 +24,7 @@ def validate_arguments(
     """
     try:
         import jsonschema
+
         try:
             jsonschema.validate(instance=arguments, schema=schema)
         except jsonschema.ValidationError as e:

@@ -1,4 +1,5 @@
 """Section builder — retrieved document chunks (non-pinned, lowest priority)."""
+
 from __future__ import annotations
 
 from ..assembler import PromptSection, SectionPriority

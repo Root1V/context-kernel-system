@@ -4,6 +4,7 @@ For now this uses an in-process dict store. The storage layer integration
 (DB persistence) is wired in task 2.2 once the storage layer is implemented
 (Group 3). The interface contract is stable and unchanged by that swap.
 """
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -11,7 +12,7 @@ from uuid import UUID
 
 from .open_files_state import OpenFileEntry, OpenFilesState
 from .session_state import SessionState, SessionStatePatch
-from .task_state import StateTransitionError, TaskState, TaskStatePatch, TaskStatus
+from .task_state import TaskState, TaskStatePatch
 
 
 class StateService:
@@ -39,9 +40,7 @@ class StateService:
             self._sessions[key] = SessionState(session_id=session_id)
         return self._sessions[key]
 
-    def update_session_state(
-        self, session_id: UUID, patch: SessionStatePatch
-    ) -> SessionState:
+    def update_session_state(self, session_id: UUID, patch: SessionStatePatch) -> SessionState:
         state = self.get_session_state(session_id)
         update_data = patch.model_dump(exclude_none=True)
         update_data["updated_at"] = datetime.utcnow()
@@ -78,9 +77,7 @@ class StateService:
             self._open_files[key] = OpenFilesState(session_id=session_id)
         return self._open_files[key]
 
-    def add_open_file(
-        self, session_id: UUID, file_path: str, summary: str
-    ) -> OpenFilesState:
+    def add_open_file(self, session_id: UUID, file_path: str, summary: str) -> OpenFilesState:
         state = self.get_open_files(session_id)
         # Replace if path already tracked
         files = [f for f in state.files if f.file_path != file_path]

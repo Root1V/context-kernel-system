@@ -1,20 +1,21 @@
 """Document chunks repository (for retrieval pipeline)."""
+
 from __future__ import annotations
 
 import uuid
-
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import String, Text, Integer, DateTime
-from sqlalchemy.dialects.postgresql import JSONB, UUID
-from sqlalchemy.sql import func
 from datetime import datetime
+
+from sqlalchemy import DateTime, Integer, String, Text, select
+from sqlalchemy.dialects.postgresql import JSONB, UUID
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.sql import func
 
 from ..db import Base
 
 try:
     from pgvector.sqlalchemy import Vector
+
     _VECTOR_AVAILABLE = True
 except ImportError:
     Vector = None  # type: ignore[assignment]

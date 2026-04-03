@@ -1,4 +1,5 @@
 """persist_state node — checkpoint RuntimeState and dispatch background jobs."""
+
 from __future__ import annotations
 
 from ..models import RuntimeState, TurnResponse, TurnStatus
@@ -9,15 +10,20 @@ def persist_state(state: RuntimeState) -> RuntimeState:
     persisted = False
     try:
         from state import StateService
+
         svc = StateService()
         # Snapshot current session state back to storage.
         if state.session_state:
-            from state import SessionState, SessionStatePatch
-            patch = SessionStatePatch(**{
-                k: v for k, v in state.session_state.items()
-                if k in SessionStatePatch.model_fields
-            })
-            svc.update_session_state(state.turn_request.session_id, patch)
+            from state import SessionStatePatch
+
+            patch = SessionStatePatch(
+                **{
+                    k: v
+                    for k, v in state.session_state.items()
+                    if k in SessionStatePatch.model_fields
+                }
+            )
+            svc.update_session_state(state.turn_request.session_id, patch)  # type: ignore[arg-type]
         persisted = True
     except Exception:
         pass

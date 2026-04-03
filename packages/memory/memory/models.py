@@ -1,4 +1,5 @@
 """Pydantic models for all memory layers."""
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -54,6 +55,7 @@ class MessageTurn(BaseModel):
 
 class MemorySnapshot(BaseModel):
     """Aggregated view of all memory layers for a session turn."""
+
     session_id: UUID
     core_memory: list[CoreMemoryBlock] = Field(default_factory=list)
     message_buffer: list[MessageTurn] = Field(default_factory=list)

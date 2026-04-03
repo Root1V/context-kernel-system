@@ -1,4 +1,5 @@
 """Section builder — recent message buffer (non-pinned, second-lowest priority)."""
+
 from __future__ import annotations
 
 from ..assembler import PromptSection, SectionPriority

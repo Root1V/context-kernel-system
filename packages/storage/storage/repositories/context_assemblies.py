@@ -1,4 +1,5 @@
 """Repository for context assembly audit records (optional tracing)."""
+
 from __future__ import annotations
 
 import uuid

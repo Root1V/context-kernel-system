@@ -3,10 +3,11 @@
 TurnRequest, TurnResponse, and RuntimeState are the data contracts for the
 Turn-Time DAG. All nodes read from and write to RuntimeState.
 """
+
 from __future__ import annotations
 
 import uuid
-from enum import auto, Enum
+from enum import Enum
 from typing import Any, Optional
 
 from pydantic import BaseModel, Field
@@ -20,6 +21,7 @@ class TurnStatus(str, Enum):
 
 class TurnRequest(BaseModel):
     """Normalized input for a single turn."""
+
     session_id: str
     user_message: str
     model_id: str = "gpt-4o"
@@ -31,6 +33,7 @@ class TurnRequest(BaseModel):
 
 class TurnResponse(BaseModel):
     """Output of a completed (or partially completed) turn."""
+
     session_id: str
     turn_id: str
     assistant_message: str
@@ -45,6 +48,7 @@ class RuntimeState(BaseModel):
     Each node reads the fields it needs and writes back its outputs.
     The orchestrator checkpoints this object to storage after each node.
     """
+
     # --- Input ---
     turn_request: TurnRequest
 

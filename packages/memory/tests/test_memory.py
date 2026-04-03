@@ -1,11 +1,11 @@
 """Unit tests for layered-memory — covers all spec scenarios."""
+
 from __future__ import annotations
 
 from datetime import datetime, timedelta
 from uuid import uuid4
 
 import pytest
-
 from memory import (
     ArchivalEntry,
     CoreMemoryBlock,
@@ -32,8 +32,16 @@ class TestCoreMemory:
     def test_budget_evicts_lowest_scored_block(self, svc):
         sid = uuid4()
         # max_core_tokens=100, add two blocks that together exceed budget
-        important = CoreMemoryBlock(session_id=sid, label="important", content="critical", token_count=60, importance_score=0.9)
-        trivial = CoreMemoryBlock(session_id=sid, label="trivial", content="meh", token_count=60, importance_score=0.1)
+        important = CoreMemoryBlock(
+            session_id=sid,
+            label="important",
+            content="critical",
+            token_count=60,
+            importance_score=0.9,
+        )
+        trivial = CoreMemoryBlock(
+            session_id=sid, label="trivial", content="meh", token_count=60, importance_score=0.1
+        )
         svc.add_core_memory_block(important)
         svc.add_core_memory_block(trivial)  # triggers eviction of 'important' which was added first
         blocks = svc.get_core_memory(sid)
@@ -44,7 +52,9 @@ class TestCoreMemory:
 
     def test_returns_typed_objects(self, svc):
         sid = uuid4()
-        svc.add_core_memory_block(CoreMemoryBlock(session_id=sid, label="l", content="c", token_count=5))
+        svc.add_core_memory_block(
+            CoreMemoryBlock(session_id=sid, label="l", content="c", token_count=5)
+        )
         for b in svc.get_core_memory(sid):
             assert isinstance(b, CoreMemoryBlock)
 
@@ -78,7 +88,9 @@ class TestMessageBuffer:
 class TestRecallMemory:
     def test_recent_entries_returned(self, svc):
         sid = uuid4()
-        entry = RecallEntry(session_id=sid, entry_type=RecallEntryType.tool_call, content="called read_file")
+        entry = RecallEntry(
+            session_id=sid, entry_type=RecallEntryType.tool_call, content="called read_file"
+        )
         svc.add_recall_entry(entry)
         entries = svc.get_recall_entries(sid)
         assert any(e.id == entry.id for e in entries)
@@ -104,8 +116,15 @@ class TestRecallMemory:
 class TestArchivalMemory:
     def test_search_returns_ranked_results(self, svc):
         sid = uuid4()
-        target = ArchivalEntry(session_id=sid, content="Python async patterns", embedding_model="test", embedding=[1.0, 0.0])
-        noise = ArchivalEntry(session_id=sid, content="SQL joins", embedding_model="test", embedding=[0.0, 1.0])
+        target = ArchivalEntry(
+            session_id=sid,
+            content="Python async patterns",
+            embedding_model="test",
+            embedding=[1.0, 0.0],
+        )
+        noise = ArchivalEntry(
+            session_id=sid, content="SQL joins", embedding_model="test", embedding=[0.0, 1.0]
+        )
         svc.add_archival_entry(target)
         svc.add_archival_entry(noise)
 

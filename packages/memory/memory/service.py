@@ -2,6 +2,7 @@
 
 MessageBuffer is defined here since it doesn't warrant its own module.
 """
+
 from __future__ import annotations
 
 from collections import deque

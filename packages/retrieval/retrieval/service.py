@@ -1,9 +1,9 @@
 """RetrievalService — the single entry point for all external context retrieval."""
+
 from __future__ import annotations
 
 from typing import Any
 
-from .chunking import chunk_documents
 from .filters import apply_filters
 from .hybrid_search import HybridSearcher
 from .rerank import Reranker

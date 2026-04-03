@@ -6,15 +6,16 @@ from .base import (
     FinishReason,
     ModelResponse,
     RateLimitError,
-    ToolCall,
     TokenUsage,
+    ToolCall,
     UnsupportedModelError,
 )
 from .limits import get_context_limit, is_openai
 from .tokenizer import count_tokens
 
 try:
-    from openai import OpenAI, RateLimitError as _OAIRateLimit
+    from openai import OpenAI
+    from openai import RateLimitError as _OAIRateLimit
 except ImportError:  # pragma: no cover
     OpenAI = None  # type: ignore[assignment,misc]
     _OAIRateLimit = None  # type: ignore[assignment,misc]
@@ -33,9 +34,7 @@ class OpenAIAdapter:
             raise UnsupportedModelError(model_id)
 
         if OpenAI is None:  # pragma: no cover
-            raise RuntimeError(
-                "openai package is required. Install with: pip install openai"
-            )
+            raise RuntimeError("openai package is required. Install with: pip install openai")
 
         client = OpenAI()
         kwargs: dict[str, Any] = {"model": model_id, "messages": messages}
@@ -45,9 +44,7 @@ class OpenAIAdapter:
         try:
             response = client.chat.completions.create(**kwargs)
         except _OAIRateLimit as exc:
-            retry_after = float(
-                getattr(exc, "retry_after", None) or 0
-            )
+            retry_after = float(getattr(exc, "retry_after", None) or 0)
             raise RateLimitError(retry_after_seconds=retry_after) from exc
 
         choice = response.choices[0]

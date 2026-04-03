@@ -3,6 +3,7 @@
 No other module may format prompt sections. All assembly is stateless:
 every call receives all required inputs explicitly as parameters.
 """
+
 from __future__ import annotations
 
 import enum
@@ -14,8 +15,10 @@ from pydantic import BaseModel, Field
 # Section priority enum
 # ---------------------------------------------------------------------------
 
+
 class SectionPriority(enum.IntEnum):
     """Lower value = higher priority. Sections are dropped highest-number first."""
+
     SYSTEM_INSTRUCTIONS = 1
     CORE_MEMORY = 2
     STATE_SUMMARY = 3
@@ -29,8 +32,10 @@ class SectionPriority(enum.IntEnum):
 # Input / output models
 # ---------------------------------------------------------------------------
 
+
 class PromptSection(BaseModel):
     """A single renderable section to be included in the context payload."""
+
     name: str
     priority: SectionPriority
     content: str
@@ -40,6 +45,7 @@ class PromptSection(BaseModel):
 
 class AssemblyInput(BaseModel):
     """All data required for a single assembly call. Stateless — pass everything."""
+
     model_id: str
     system_instructions: str = ""
     tool_schemas: list[dict[str, Any]] = Field(default_factory=list)
@@ -54,6 +60,7 @@ class AssemblyInput(BaseModel):
 
 class ActiveContext(BaseModel):
     """The fully assembled, token-budget-constrained prompt payload for one turn."""
+
     model_id: str
     sections: list[PromptSection] = Field(default_factory=list)
     total_tokens: int = 0
@@ -69,6 +76,7 @@ class ActiveContext(BaseModel):
 # Assembler
 # ---------------------------------------------------------------------------
 
+
 class ContextAssembler:
     """Stateless context assembler.
 
@@ -80,13 +88,13 @@ class ContextAssembler:
     """
 
     def assemble(self, inp: AssemblyInput) -> ActiveContext:
-        from .token_budget import TokenBudget
-        from .sections.system_prompt import build_section as build_system
-        from .sections.tool_context import build_section as build_tools
+        from .sections.files_artifacts import build_section as build_files
         from .sections.memory_blocks import build_section as build_memory
         from .sections.message_buffer import build_section as build_buffer
         from .sections.retrieved_context import build_section as build_retrieved
-        from .sections.files_artifacts import build_section as build_files
+        from .sections.system_prompt import build_section as build_system
+        from .sections.tool_context import build_section as build_tools
+        from .token_budget import TokenBudget
 
         budget = TokenBudget(inp.model_id)
         available = budget.available(inp.response_reserve)

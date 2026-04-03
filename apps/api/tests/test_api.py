@@ -10,10 +10,11 @@ Spec scenarios covered:
 
 Requires: fastapi, httpx (for TestClient)
 """
+
 from __future__ import annotations
 
-import sys
 import os
+import sys
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -22,12 +23,11 @@ import pytest
 # Structural check: does not require fastapi — always runs
 # ---------------------------------------------------------------------------
 
+
 class TestRouteNoBizLogic:
     def test_chat_route_has_no_direct_assembly_import(self):
         """Ensure the chat route module does not import forbidden packages."""
-        route_file = os.path.join(
-            os.path.dirname(__file__), "..", "app", "routes", "chat.py"
-        )
+        route_file = os.path.join(os.path.dirname(__file__), "..", "app", "routes", "chat.py")
         with open(route_file) as f:
             source = f.read()
 
@@ -38,9 +38,7 @@ class TestRouteNoBizLogic:
             )
 
     def test_sessions_route_has_no_direct_assembly_import(self):
-        route_file = os.path.join(
-            os.path.dirname(__file__), "..", "app", "routes", "sessions.py"
-        )
+        route_file = os.path.join(os.path.dirname(__file__), "..", "app", "routes", "sessions.py")
         with open(route_file) as f:
             source = f.read()
         forbidden = ["context_assembler", "memory.service", "retrieval.service"]
@@ -48,9 +46,7 @@ class TestRouteNoBizLogic:
             assert name not in source
 
     def test_health_route_has_no_direct_assembly_import(self):
-        route_file = os.path.join(
-            os.path.dirname(__file__), "..", "app", "routes", "health.py"
-        )
+        route_file = os.path.join(os.path.dirname(__file__), "..", "app", "routes", "health.py")
         with open(route_file) as f:
             source = f.read()
         forbidden = ["context_assembler", "memory.service", "retrieval.service"]
@@ -74,6 +70,7 @@ for _p in [_PACKAGES, _ORCHESTRATOR]:
         sys.path.insert(0, _p)
 
 from fastapi.testclient import TestClient
+
 from apps.api.app.main import app
 
 client = TestClient(app)
@@ -92,11 +89,16 @@ def _mock_orchestrate(session_id="sess-1", assistant_message="Paris.", status="o
 
 class TestChatRoute:
     def test_valid_request_calls_orchestrator(self):
-        with patch("apps.api.app.routes.chat.orchestrate", return_value=_mock_orchestrate()) as mock_orch:
-            response = client.post("/chat", json={
-                "session_id": "sess-1",
-                "message": "What is the capital of France?",
-            })
+        with patch(
+            "apps.api.app.routes.chat.orchestrate", return_value=_mock_orchestrate()
+        ) as mock_orch:
+            response = client.post(
+                "/chat",
+                json={
+                    "session_id": "sess-1",
+                    "message": "What is the capital of France?",
+                },
+            )
 
         assert response.status_code == 200
         data = response.json()
@@ -115,10 +117,13 @@ class TestChatRoute:
 
     def test_response_shape(self):
         with patch("apps.api.app.routes.chat.orchestrate", return_value=_mock_orchestrate()):
-            response = client.post("/chat", json={
-                "session_id": "sess-1",
-                "message": "hi",
-            })
+            response = client.post(
+                "/chat",
+                json={
+                    "session_id": "sess-1",
+                    "message": "hi",
+                },
+            )
         data = response.json()
         assert "session_id" in data
         assert "turn_id" in data

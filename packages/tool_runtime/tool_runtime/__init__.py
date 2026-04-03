@@ -1,4 +1,5 @@
 """tool_runtime — public interface for MCP tool execution."""
+
 from __future__ import annotations
 
 import logging

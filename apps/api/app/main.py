@@ -1,4 +1,5 @@
 """FastAPI application entry point for the Context Kernel API."""
+
 from __future__ import annotations
 
 from fastapi import FastAPI

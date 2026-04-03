@@ -1,10 +1,10 @@
 """Session management routes — POST /sessions and GET /sessions/{session_id}."""
+
 from __future__ import annotations
 
-import sys
 import os
+import sys
 import uuid
-from typing import Optional
 
 from fastapi import APIRouter, HTTPException
 
@@ -24,6 +24,7 @@ async def create_session(request: SessionCreateRequest) -> SessionResponse:
     try:
         from state import StateService
         from state.session_state import SessionState
+
         svc = StateService()
         svc.update_session_state(
             session_id,
@@ -44,6 +45,7 @@ async def get_session(session_id: str) -> SessionResponse:
     """Retrieve an existing session or return 404."""
     try:
         from state import StateService
+
         svc = StateService()
         state = svc.get_session_state(session_id)
     except Exception:

@@ -1,4 +1,5 @@
 """Fixed-overlap token-window text chunker."""
+
 from __future__ import annotations
 
 

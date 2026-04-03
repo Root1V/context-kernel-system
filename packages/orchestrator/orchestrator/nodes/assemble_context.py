@@ -1,4 +1,5 @@
 """assemble_context node — call ContextAssembler to produce prompt payload."""
+
 from __future__ import annotations
 
 from ..models import RuntimeState
@@ -8,6 +9,7 @@ def assemble_context(state: RuntimeState) -> RuntimeState:
     """Assemble the token-budget-constrained prompt from all gathered inputs."""
     try:
         from context_assembler import AssemblyInput, assemble
+
         snapshot = state.memory_snapshot
         inp = AssemblyInput(
             model_id=state.turn_request.model_id,

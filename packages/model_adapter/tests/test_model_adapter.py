@@ -1,10 +1,10 @@
 """Unit tests for model_adapter — covers all spec scenarios."""
+
 from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
 
 import pytest
-
 from model_adapter import (
     ModelResponse,
     RateLimitError,
@@ -16,10 +16,10 @@ from model_adapter import (
 )
 from model_adapter.base import FinishReason
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _make_openai_response(content: str = "hello", finish_reason: str = "stop"):
     """Build a minimal mock that mimics openai.ChatCompletion."""
@@ -43,6 +43,7 @@ def _make_anthropic_response(text: str = "hi"):
 # UnsupportedModelError
 # ---------------------------------------------------------------------------
 
+
 class TestUnsupportedModel:
     def test_complete_raises_for_unknown_model(self):
         with pytest.raises(UnsupportedModelError) as exc_info:
@@ -62,6 +63,7 @@ class TestUnsupportedModel:
 # get_context_limit
 # ---------------------------------------------------------------------------
 
+
 class TestContextLimit:
     def test_gpt4o_returns_128k(self):
         assert get_context_limit("gpt-4o") == 128_000
@@ -73,6 +75,7 @@ class TestContextLimit:
 # ---------------------------------------------------------------------------
 # count_tokens
 # ---------------------------------------------------------------------------
+
 
 class TestCountTokens:
     def test_anthropic_count_is_positive(self):
@@ -91,6 +94,7 @@ class TestCountTokens:
 # ---------------------------------------------------------------------------
 # OpenAI complete — happy path
 # ---------------------------------------------------------------------------
+
 
 class TestOpenAIComplete:
     @patch("model_adapter.openai_adapter.OpenAI")
@@ -130,6 +134,7 @@ class TestOpenAIComplete:
 # ---------------------------------------------------------------------------
 # Anthropic complete — happy path
 # ---------------------------------------------------------------------------
+
 
 class TestAnthropicComplete:
     @patch("model_adapter.anthropic_adapter.anthropic")

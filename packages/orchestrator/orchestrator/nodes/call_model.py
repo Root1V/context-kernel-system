@@ -1,4 +1,5 @@
 """infer node — call model_adapter.complete() with assembled context."""
+
 from __future__ import annotations
 
 from ..models import RuntimeState

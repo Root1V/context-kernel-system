@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from typing import Any, Optional
-from uuid import UUID, uuid4
+from uuid import UUID
 
 from pydantic import BaseModel, Field
 
@@ -20,6 +20,7 @@ class SessionState(BaseModel):
 
 class SessionStatePatch(BaseModel):
     """Partial update payload — all fields optional."""
+
     user_id: Optional[str] = None
     active_task_id: Optional[str] = None
     is_compiling: Optional[bool] = None

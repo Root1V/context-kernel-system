@@ -8,15 +8,14 @@ Spec scenarios covered:
   - Compaction template loaded from file (not hardcoded)
   - Job poller dispatches correct handler per job type
 """
+
 from __future__ import annotations
 
-import sys
 import os
+import sys
 from contextlib import contextmanager
 from datetime import datetime
 from unittest.mock import MagicMock, patch
-
-import pytest
 
 # Ensure worker package is importable.
 _WORKER_ROOT = os.path.join(os.path.dirname(__file__), "..")
@@ -27,15 +26,15 @@ _PACKAGES = os.path.join(os.path.dirname(__file__), "..", "..", "..", "packages"
 if _PACKAGES not in sys.path:
     sys.path.insert(0, _PACKAGES)
 
-from worker.models import Job, JobStatus, JobType
-from worker.main import enqueue_job, run_once, _JOB_QUEUE
-from worker.jobs.compaction import handle_compaction, _load_template
+from worker.jobs.compaction import _load_template, handle_compaction
 from worker.jobs.memory_cleanup import handle_archival_promotion
-
+from worker.main import _JOB_QUEUE, enqueue_job, run_once
+from worker.models import Job, JobStatus, JobType
 
 # ---------------------------------------------------------------------------
 # sys.modules injection helpers (handlers use local imports inside functions)
 # ---------------------------------------------------------------------------
+
 
 @contextmanager
 def _mock_model_adapter(return_content: str = "Summary."):
@@ -88,6 +87,7 @@ def _mock_memory_service(mock_svc: MagicMock):
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _make_job(job_type=JobType.compaction, **payload_overrides) -> Job:
     payload = {"messages": ["User: Hello!", "Assistant: Hi there!"], "model_id": "gpt-4o"}
     payload.update(payload_overrides)
@@ -106,6 +106,7 @@ def _clear_queue() -> None:
 # Scenario: Compaction template loaded from file
 # ---------------------------------------------------------------------------
 
+
 class TestCompactionTemplate:
     def test_template_loads_from_file(self):
         template = _load_template()
@@ -115,7 +116,9 @@ class TestCompactionTemplate:
     def test_template_not_in_compaction_source(self):
         """Ensure template text is loaded from file, not hardcoded in handler."""
         import inspect
+
         from worker.jobs import compaction as mod
+
         source = inspect.getsource(mod)
         # The compaction handler should NOT contain the prompt text inline.
         assert "You are a highly efficient" not in source, (
@@ -126,6 +129,7 @@ class TestCompactionTemplate:
 # ---------------------------------------------------------------------------
 # Scenario: Compaction job processes messages
 # ---------------------------------------------------------------------------
+
 
 class TestCompactionHandler:
     def test_compaction_marks_complete(self):
@@ -188,6 +192,7 @@ class TestCompactionHandler:
 # Scenario: Archival promotion — idempotent
 # ---------------------------------------------------------------------------
 
+
 class TestArchivalPromotion:
     def test_archival_marks_complete(self):
         job = _make_job(job_type=JobType.archival_promotion)
@@ -239,6 +244,7 @@ class TestArchivalPromotion:
 # Scenario: Job survives worker crash (status stays pending if not claimed)
 # ---------------------------------------------------------------------------
 
+
 class TestJobPersistence:
     def setup_method(self):
         _clear_queue()
@@ -285,6 +291,7 @@ class TestJobPersistence:
 # ---------------------------------------------------------------------------
 # Job model tests
 # ---------------------------------------------------------------------------
+
 
 class TestJobModel:
     def test_default_status_is_pending(self):

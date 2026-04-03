@@ -1,4 +1,5 @@
 """GET /health route — check DB and MCP gateway connectivity."""
+
 from __future__ import annotations
 
 from fastapi import APIRouter
@@ -20,6 +21,7 @@ async def health() -> HealthResponse:
     # DB check
     try:
         from storage.db import init_db  # noqa: F401
+
         checks["db"] = "ok"
     except Exception as exc:
         checks["db"] = f"unavailable: {exc}"
@@ -27,6 +29,7 @@ async def health() -> HealthResponse:
     # MCP gateway check
     try:
         from tool_runtime import ToolRuntime  # noqa: F401
+
         checks["mcp"] = "ok"
     except Exception as exc:
         checks["mcp"] = f"unavailable: {exc}"

@@ -8,6 +8,7 @@ Table definitions:
 - archival_entries  (with pgvector embedding column)
 - jobs
 """
+
 from __future__ import annotations
 
 import uuid
@@ -22,6 +23,7 @@ from .db import Base
 
 try:
     from pgvector.sqlalchemy import Vector
+
     _VECTOR_AVAILABLE = True
 except ImportError:
     # Allows importing without pgvector installed (tests/CI)
@@ -39,17 +41,27 @@ class Session(Base):
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
 
-    state: Mapped["SessionStateRow | None"] = relationship("SessionStateRow", back_populates="session", uselist=False)
-    core_memory: Mapped[list["CoreMemoryBlock"]] = relationship("CoreMemoryBlock", back_populates="session")
-    recall_entries: Mapped[list["RecallEntry"]] = relationship("RecallEntry", back_populates="session")
-    archival_entries: Mapped[list["ArchivalEntry"]] = relationship("ArchivalEntry", back_populates="session")
+    state: Mapped[SessionStateRow | None] = relationship(
+        "SessionStateRow", back_populates="session", uselist=False
+    )
+    core_memory: Mapped[list[CoreMemoryBlock]] = relationship(
+        "CoreMemoryBlock", back_populates="session"
+    )
+    recall_entries: Mapped[list[RecallEntry]] = relationship(
+        "RecallEntry", back_populates="session"
+    )
+    archival_entries: Mapped[list[ArchivalEntry]] = relationship(
+        "ArchivalEntry", back_populates="session"
+    )
 
 
 class SessionStateRow(Base):
     __tablename__ = "session_state"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    session_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("sessions.id"), unique=True)
+    session_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("sessions.id"), unique=True
+    )
     active_task_id: Mapped[str | None] = mapped_column(String(256), nullable=True)
     is_compiling: Mapped[bool] = mapped_column(Boolean, default=False)
     is_searching: Mapped[bool] = mapped_column(Boolean, default=False)
