@@ -21,6 +21,10 @@ bash .git/hooks/pre-push
 Fix any failures before pushing. The hook runs: ruff lint, ruff format check, mypy, and 10 test suites.
 
 ## Code Style
+- **Dependencies must be managed exclusively with `uv`** — never use `pip`, `pip-tools`, or `poetry`.
+  - Add a dependency: `uv add <package>`
+  - Sync the environment: `uv sync`
+  - Run a tool: `uv run <command>`
 - Python 3.9 compatibility — use `Optional[X]` not `X | None` in Pydantic models.
 - Line length: 100 chars (ruff config).
 - All new code must pass `ruff check` and `ruff format --check`.

@@ -25,6 +25,10 @@ docs/              # ADRs, architecture docs, task tracking
 
 ## Tech Stack
 - **Python 3.9** (system) for tests; **Python 3.13** (`.venv/`) for lint/type tools
+- **Dependency management: `uv` exclusively** — never use `pip`, `pip-tools`, or `poetry` directly.
+  - Install deps: `uv add <package>`
+  - Sync environment: `uv sync`
+  - Run tools: `uv run <command>`
 - **FastAPI** + Uvicorn for the API
 - **Pydantic v2** for all models — use `Optional[X]` not `X | None` (3.9 compat)
 - **ruff** (lint + format), **mypy** (type checking), **pytest** (tests)
