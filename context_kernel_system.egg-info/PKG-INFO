@@ -1,0 +1,41 @@
+Metadata-Version: 2.4
+Name: context-kernel-system
+Version: 0.1.0
+Summary: Context Kernel es a modular runtime for stateful AI Systems: context assembly, layered memory, retrieval, tool orchestration, and sleep-time consolidation
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+Requires-Dist: openai>=1.0.0
+Requires-Dist: anthropic>=0.20.0
+Requires-Dist: langgraph>=0.1.0
+Requires-Dist: fastapi>=0.110.0
+Requires-Dist: uvicorn[standard]>=0.29.0
+Requires-Dist: httpx>=0.27.0
+Requires-Dist: pydantic>=2.0.0
+Requires-Dist: sqlalchemy[asyncio]>=2.0.0
+Requires-Dist: asyncpg>=0.29.0
+Requires-Dist: pgvector>=0.3.0
+Requires-Dist: alembic>=1.13.0
+Requires-Dist: rank-bm25>=0.2.2
+Requires-Dist: sentence-transformers>=2.6.0
+Requires-Dist: tiktoken>=0.6.0
+Requires-Dist: opentelemetry-api>=1.24.0
+Requires-Dist: opentelemetry-sdk>=1.24.0
+Requires-Dist: slowapi>=0.1.9
+Provides-Extra: dev
+Requires-Dist: pytest>=8.0.0; extra == "dev"
+Requires-Dist: pytest-asyncio>=0.23.0; extra == "dev"
+Requires-Dist: pytest-cov>=5.0.0; extra == "dev"
+Requires-Dist: ruff>=0.4.0; extra == "dev"
+Requires-Dist: mypy>=1.10.0; extra == "dev"
+
+# Context Kernel System
+
+Core system for management and optimization of context kernels.
+
+## Workflow
+- **main**: Stable production branch.
+- **develop**: Integration branch for features.
+- **feature/***: New functionality development.
+
+## Setup
+Initial repository setup.
