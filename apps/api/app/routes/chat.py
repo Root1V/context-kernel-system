@@ -9,8 +9,10 @@ from __future__ import annotations
 import os
 import sys
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 
+from ..config import settings
+from ..limiter import limiter
 from ..schemas.chat import ChatRequest, ChatResponse
 
 router = APIRouter()
@@ -28,7 +30,8 @@ for _pkg_dir in sorted(os.listdir(_PACKAGES_ROOT)):
 
 
 @router.post("/chat", response_model=ChatResponse, status_code=200)
-async def chat(request: ChatRequest) -> ChatResponse:
+@limiter.limit(settings.CHAT_RATE_LIMIT)
+async def chat(request: Request, body: ChatRequest) -> ChatResponse:
     """Receive a chat message, run a full Turn-Time DAG, return the response."""
     try:
         from orchestrator import TurnRequest, orchestrate
@@ -36,11 +39,11 @@ async def chat(request: ChatRequest) -> ChatResponse:
         raise HTTPException(status_code=503, detail=f"Orchestrator not available: {exc}") from exc
 
     turn_req = TurnRequest(
-        session_id=request.session_id,
-        user_message=request.message,
-        model_id=request.model_id,
-        max_tool_iterations=request.max_tool_iterations,
-        retrieval_needed=request.retrieval_needed,
+        session_id=body.session_id,
+        user_message=body.message,
+        model_id=body.model_id,
+        max_tool_iterations=body.max_tool_iterations,
+        retrieval_needed=body.retrieval_needed,
     )
     turn_resp = orchestrate(turn_req)
     return ChatResponse(

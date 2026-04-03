@@ -38,3 +38,9 @@ class TestRouteNoBizLogic:
         """Chat route must delegate to orchestrate()."""
         source = _read_route("chat")
         assert "orchestrate" in source, "chat.py must call orchestrate()"
+
+    def test_chat_route_has_rate_limit_decorator(self):
+        """Chat route must have @limiter.limit and request: Request for slowapi."""
+        source = _read_route("chat")
+        assert "limiter.limit" in source, "chat.py must have @limiter.limit decorator"
+        assert "request: Request" in source, "chat.py must accept request: Request for slowapi"

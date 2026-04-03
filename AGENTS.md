@@ -97,7 +97,7 @@ The mandatory cycle for every change is:
 2. **Apply** (`opsx:apply`) — implement only the tasks listed in the spec.
 3. **Verify** (`opsx:verify`) — confirm deliverables match the proposal; run the quality gate.
 4. **Document** (`opsx:document`) — update ADRs, README, and architecture docs.
-5. **Archive** (`opsx:archive`) — close the change once the PR is merged.
+5. **Archive** (`opsx:archive`) — archive the spec, commit all changes, push the branch, and open the PR to `develop`.
 
 If asked to implement something without an open spec, create the spec first.
 Specs live in `openspec/changes/<name>/`. Use the available skills:

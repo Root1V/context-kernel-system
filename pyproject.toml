@@ -29,6 +29,8 @@ dependencies = [
     # Observability (optional — graceful import failures throughout)
     "opentelemetry-api>=1.24.0",
     "opentelemetry-sdk>=1.24.0",
+    # Rate limiting
+    "slowapi>=0.1.9",
 ]
 
 [project.optional-dependencies]
@@ -42,7 +44,7 @@ dev = [
 
 [build-system]
 requires = ["setuptools>=68", "wheel"]
-build-backend = "setuptools.backends.legacy:build"
+build-backend = "setuptools.build_meta"
 
 [tool.pytest.ini_options]
 asyncio_mode = "strict"
