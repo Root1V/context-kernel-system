@@ -1,6 +1,8 @@
 README.md
 pyproject.toml
 apps/api/app/__init__.py
+apps/api/app/config.py
+apps/api/app/limiter.py
 apps/api/app/main.py
 apps/api/app/routes/__init__.py
 apps/api/app/routes/chat.py
@@ -11,6 +13,7 @@ apps/api/app/schemas/chat.py
 apps/api/app/schemas/session.py
 apps/api/tests/test_api.py
 apps/api/tests/test_api_structure.py
+apps/api/tests/test_rate_limit.py
 apps/worker/tests/test_worker.py
 apps/worker/worker/__init__.py
 apps/worker/worker/main.py
