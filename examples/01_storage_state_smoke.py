@@ -13,6 +13,10 @@ import os
 import sys
 import uuid
 
+from dotenv import load_dotenv
+
+load_dotenv()  # loads .env from the project root
+
 # Add each package directory to sys.path so imports resolve correctly.
 _ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 for _pkg in ["storage", "state"]:
@@ -47,7 +51,8 @@ try:
     print("  ✓ init_db() succeeded — engine connected to database")
 except RuntimeError as exc:
     print(f"  ⚠️  fallback: {exc}")
-    print("  →  Set DATABASE_URL=postgresql+asyncpg://user:pass@localhost/dbname to connect")
+    print("  →  Start the DB:  docker compose -f packages/storage/docker-compose.yml up -d")
+    print("  →  Then run:      DATABASE_URL=postgresql+asyncpg://kernel:kernel@localhost:5433/context_kernel uv run python3 examples/01_storage_state_smoke.py")
 except Exception as exc:
     print(f"  ⚠️  fallback: {exc}")
 

@@ -45,7 +45,8 @@ class OpenAIAdapter:
             response = client.chat.completions.create(**kwargs)
         except _OAIRateLimit as exc:
             retry_after = float(getattr(exc, "retry_after", None) or 0)
-            raise RateLimitError(retry_after_seconds=retry_after) from exc
+            is_quota = "insufficient_quota" in str(exc).lower()
+            raise RateLimitError(retry_after_seconds=retry_after, is_quota_exceeded=is_quota) from exc
 
         choice = response.choices[0]
         message = choice.message
