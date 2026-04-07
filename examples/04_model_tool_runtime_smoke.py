@@ -14,6 +14,10 @@ What this tests:
 import os
 import sys
 
+from dotenv import load_dotenv
+
+load_dotenv()  # loads .env from the project root
+
 _ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 for _pkg in ["tool_runtime", "model_adapter"]:
     _d = os.path.join(_ROOT, "packages", _pkg)
@@ -81,9 +85,11 @@ except Exception as exc:
 print("\n--- Model Adapter (LLM call) ---")
 try:
     from model_adapter import complete, UnsupportedModelError
+    from model_adapter.base import RateLimitError
 
     messages = [{"role": "user", "content": "What is context assembly in 1 sentence?"}]
-    response = complete(messages=messages, model_id="gpt-4o")
+    # Uses gpt-4o-mini by default — switch to claude-3-5-haiku-20241022 if using Anthropic
+    response = complete(messages=messages, model_id="gpt-4o-mini")
 
     print(f"  content       : {response.content[:200]}")
     print(f"  finish_reason : {response.finish_reason}")
@@ -93,6 +99,16 @@ try:
               f"completion={response.usage.completion_tokens} "
               f"total={response.usage.total_tokens}")
     print(f"\n  ✓ model_adapter.complete() returned a ModelResponse")
+except RateLimitError as exc:
+    if exc.is_quota_exceeded:
+        print("  ⚠️  OpenAI quota exhausted — add billing credits:")
+        print("  →  https://platform.openai.com/settings/billing")
+        print("  →  Or set ANTHROPIC_API_KEY in .env to use Claude instead")
+    else:
+        wait = exc.retry_after_seconds
+        hint = f"wait ~{wait:.0f}s and retry" if wait > 0 else "wait ~60s and retry (free-tier RPM limit)"
+        print(f"  ⚠️  Rate limit: {hint}")
+        print("  →  Run the script again after waiting")
 except UnsupportedModelError as exc:
     print(f"  ⚠️  No LLM configured: {exc}")
     print("  →  Set OPENAI_API_KEY or ANTHROPIC_API_KEY to enable LLM calls")
@@ -100,6 +116,10 @@ except Exception as exc:
     err_str = str(exc).lower()
     if any(k in err_str for k in ("api_key", "apikey", "authentication", "unauthorized", "incorrect api")):
         print("  ⚠️  No LLM configured: set OPENAI_API_KEY or ANTHROPIC_API_KEY")
+    elif "credit balance is too low" in err_str or "insufficient_quota" in err_str:
+        print("  ⚠️  LLM provider has no credits — add billing credits:")
+        print("  →  OpenAI:    https://platform.openai.com/settings/billing")
+        print("  →  Anthropic: https://console.anthropic.com/settings/billing")
     else:
         print(f"  ⚠️  fallback: {exc}")
 

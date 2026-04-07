@@ -21,6 +21,10 @@ The TurnResponse will still be populated with status="ok" or status="error".
 import os
 import sys
 
+from dotenv import load_dotenv
+
+load_dotenv()  # loads .env from the project root
+
 _ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 for _pkg in [
     "orchestrator",
