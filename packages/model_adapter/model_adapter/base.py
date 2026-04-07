@@ -40,6 +40,8 @@ class UnsupportedModelError(Exception):
 
 
 class RateLimitError(Exception):
-    def __init__(self, retry_after_seconds: float = 0) -> None:
-        super().__init__(f"Rate limit exceeded. Retry after {retry_after_seconds}s")
+    def __init__(self, retry_after_seconds: float = 0, is_quota_exceeded: bool = False) -> None:
+        msg = "OpenAI quota exhausted" if is_quota_exceeded else f"Rate limit exceeded. Retry after {retry_after_seconds}s"
+        super().__init__(msg)
         self.retry_after_seconds = retry_after_seconds
+        self.is_quota_exceeded = is_quota_exceeded

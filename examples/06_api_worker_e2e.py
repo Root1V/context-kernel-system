@@ -24,6 +24,10 @@ import sys
 import urllib.error
 import urllib.request
 
+from dotenv import load_dotenv
+
+load_dotenv()  # loads .env from the project root
+
 _ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Worker imports need apps/worker + the packages it depends on

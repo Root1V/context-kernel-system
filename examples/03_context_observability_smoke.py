@@ -14,6 +14,10 @@ What this tests:
 import os
 import sys
 
+from dotenv import load_dotenv
+
+load_dotenv()  # loads .env from the project root
+
 _ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 for _pkg in ["observability", "context_assembler"]:
     _d = os.path.join(_ROOT, "packages", _pkg)
