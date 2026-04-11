@@ -113,4 +113,3 @@ packages/tool_runtime/tool_runtime/mcp_gateway.py
 packages/tool_runtime/tool_runtime/registry.py
 packages/tool_runtime/tool_runtime/safety.py
 tests/test_e2e_smoke.py
-tests/test_import_boundaries.py
