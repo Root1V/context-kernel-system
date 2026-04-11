@@ -90,8 +90,9 @@ Package layout
 model_adapter/
 |
 |-- base.py
-|-- openai_adapter.py
-|-- anthropic_adapter.py
+|-- openai_adapter.py        # Cloud — gpt-* models
+|-- anthropic_adapter.py     # Cloud — claude-* models
+|-- axonium_adapter.py       # Local — local/* models via llama-server + Axonium SDK
 |-- tokenizer.py
 `-- limits.py
 
@@ -162,6 +163,18 @@ normalize provider response
 define limits exposure
 add tests
 do not change orchestrator or assembler unless the internal contract truly needs to evolve
+
+Supported providers
+| Prefix | Provider | Adapter | Notes |
+|---|---|---|---|
+| `gpt-*` | OpenAI | `OpenAIAdapter` | Cloud — requires `OPENAI_API_KEY` |
+| `claude-*` | Anthropic | `AnthropicAdapter` | Cloud — requires `ANTHROPIC_API_KEY` |
+| `local/*` | llama-server (Axonium SDK) | `AxoniumAdapter` | Local — requires `LLM_BASE_URL`, `LLM_USERNAME`, `LLM_PASSWORD` and a running llama-server. No tool-call support. See ADR-006. |
+
+To use a local model, pass `model_id="local/<model-name>"` to `complete()`.
+The `local/` prefix is stripped before forwarding to llama-server.
+Authentication (Bearer token) is managed transparently by the Axonium SDK.
+Install the wheel: `uv add --find-links <path-to-dist> axonium` (Python 3.13 venv only).
 
 Practical checklist
 Before merging changes here, ask:

@@ -15,6 +15,9 @@ _CONTEXT_LIMITS: dict[str, int] = {
     "claude-3-opus-20240229": 200_000,
     "claude-3-sonnet-20240229": 200_000,
     "claude-3-haiku-20240307": 200_000,
+    # Local (llama-server via Axonium SDK)
+    "local/mistral-7b-instruct": 32_768,
+    "local/llama3-8b": 32_768,
 }
 
 _OPENAI_MODELS = {k for k in _CONTEXT_LIMITS if k.startswith("gpt")}
@@ -34,6 +37,11 @@ def is_openai(model_id: str) -> bool:
 
 def is_anthropic(model_id: str) -> bool:
     return model_id in _ANTHROPIC_MODELS
+
+
+def is_local(model_id: str) -> bool:
+    """Return True for local/* model IDs served via llama-server / Axonium SDK."""
+    return model_id.startswith("local/")
 
 
 def supported_models() -> list[str]:

@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 try:
     from opentelemetry import trace as _otel_trace
 
-    _TRACER = _otel_trace.get_tracer("context-kernel")
+    _TRACER: Optional[Any] = _otel_trace.get_tracer("context-kernel")
     _OTEL_AVAILABLE = True
 except ImportError:  # pragma: no cover
     _TRACER = None
