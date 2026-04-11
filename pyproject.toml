@@ -32,6 +32,8 @@ dependencies = [
     # Rate limiting
     "slowapi>=0.1.9",
     "python-dotenv>=1.2.1",
+    # Local LLM via llama-server (Python 3.13 venv only — lazy import in AxoniumAdapter)
+    "axonium>=0.6.0 ; python_full_version >= '3.13'",
 ]
 
 [project.optional-dependencies]
@@ -73,7 +75,7 @@ ignore = [
 "**/tests/**" = ["S101", "E402"]
 
 [tool.mypy]
-python_version = "3.9"
+python_version = "3.13"
 strict = false
 ignore_missing_imports = true
 no_implicit_reexport = false

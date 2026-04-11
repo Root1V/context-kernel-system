@@ -6,9 +6,10 @@ internal submodules (e.g. openai_adapter, anthropic_adapter).
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Optional
 
 from .anthropic_adapter import AnthropicAdapter
+from .axonium_adapter import AxoniumAdapter
 from .base import (
     FinishReason,
     ModelResponse,
@@ -26,6 +27,8 @@ __all__ = [
     "count_tokens",
     "get_context_limit",
     "supported_models",
+    # Adapters
+    "AxoniumAdapter",
     # Models / exceptions
     "ModelResponse",
     "TokenUsage",
@@ -37,15 +40,21 @@ __all__ = [
 
 _openai = OpenAIAdapter()
 _anthropic = AnthropicAdapter()
+_axonium: Optional[AxoniumAdapter] = None
 
 
-def _get_adapter(model_id: str) -> OpenAIAdapter | AnthropicAdapter:
-    from .limits import is_anthropic, is_openai
+def _get_adapter(model_id: str) -> OpenAIAdapter | AnthropicAdapter | AxoniumAdapter:
+    from .limits import is_anthropic, is_local, is_openai
 
     if is_openai(model_id):
         return _openai
     if is_anthropic(model_id):
         return _anthropic
+    if is_local(model_id):
+        global _axonium
+        if _axonium is None:
+            _axonium = AxoniumAdapter()
+        return _axonium
     raise UnsupportedModelError(model_id)
 
 
