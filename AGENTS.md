@@ -7,7 +7,7 @@ Python monorepo that implements a context-aware AI kernel system. It manages con
 ```
 packages/          # Importable Python packages (each has its own tests/)
   memory/          # Core, recall, and archival memory layers
-  model_adapter/   # LLM provider abstraction (OpenAI, Anthropic, llama)
+  model_adapter/   # LLM provider abstraction (OpenAI, Anthropic, local via Axonium)
   state/           # Session, task, and open-files state
   storage/         # DB access layer (SQLAlchemy + pgvector)
   retrieval/       # Hybrid search (BM25 + vector), chunking, rerank
@@ -25,6 +25,7 @@ docs/              # ADRs, architecture docs, task tracking
 
 ## Tech Stack
 - **Python 3.9** (system) for tests; **Python 3.13** (`.venv/`) for lint/type tools
+- **mypy** runs with `python_version = "3.13"` (set in `pyproject.toml`) — keep this in sync
 - **Dependency management: `uv` exclusively** — never use `pip`, `pip-tools`, or `poetry` directly.
   - Install deps: `uv add <package>`
   - Sync environment: `uv sync`
@@ -85,6 +86,20 @@ bash .git/hooks/pre-push
 cd apps/api
 PYTHONPATH=../../packages uvicorn app.main:app --reload --port 8000
 ```
+
+## Environment Variables
+Copy `.env.example` to `.env` and fill in:
+```
+DATABASE_URL=postgresql+asyncpg://kernel:kernel@localhost:5433/context_kernel
+OPENAI_API_KEY=
+ANTHROPIC_API_KEY=
+LLM_BASE_URL=http://localhost:8080   # local llama-server (used by AxoniumAdapter)
+LLM_USERNAME=
+LLM_PASSWORD=
+CHAT_RATE_LIMIT=60/minute
+```
+
+Start PostgreSQL + pgvector: `docker compose -f packages/storage/docker-compose.yml up -d`
 
 ## Spec-Driven Changes (openspec/) — MANDATORY
 
