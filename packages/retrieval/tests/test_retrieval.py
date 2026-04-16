@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
+import uuid
+from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
 from retrieval import DocumentChunk, RetrievalService, chunk_text
 from retrieval.filters import apply_filters
 from retrieval.hybrid_search import HybridSearcher
@@ -121,3 +125,84 @@ class TestRetrievalService:
         # The service must not expose raw DB methods
         assert not hasattr(svc, "execute")
         assert not hasattr(svc, "query")
+
+
+class TestAsyncRetrievalService:
+    @pytest.mark.asyncio
+    async def test_async_search_no_factory_returns_empty(self):
+        """Without a session_factory, async_search falls back to in-memory search (empty corpus)."""
+        svc = RetrievalService()  # no corpus, no session_factory
+        result = await svc.async_search("sess-1", "python async")
+        assert result == []
+
+    @pytest.mark.asyncio
+    async def test_async_search_no_factory_uses_loaded_corpus(self):
+        """When session_factory is None, async_search returns from in-memory corpus."""
+        svc = RetrievalService(corpus=CORPUS)
+        result = await svc.async_search("sess-1", "python async", top_k=2)
+        assert all(isinstance(r, DocumentChunk) for r in result)
+        assert len(result) <= 2
+
+    @pytest.mark.asyncio
+    async def test_async_search_with_mock_factory(self):
+        """async_search queries ArchivalRepository and converts rows to DocumentChunks."""
+        mock_row = MagicMock()
+        mock_row.id = uuid.UUID("00000000-0000-0000-0000-000000000001")
+        mock_row.content = "Python async patterns"
+        mock_row.embedding = None
+        mock_row.metadata_ = {"source_type": "codebase"}
+
+        mock_repo = AsyncMock()
+        mock_repo.search.return_value = [mock_row]
+
+        mock_session = AsyncMock()
+        mock_session.__aenter__ = AsyncMock(return_value=mock_session)
+        mock_session.__aexit__ = AsyncMock(return_value=None)
+
+        def factory():
+            return mock_session
+
+        mock_module = MagicMock()
+        mock_module.ArchivalRepository = MagicMock(return_value=mock_repo)
+        with patch.dict(
+            "sys.modules",
+            {
+                "storage.repositories.memory_blocks": mock_module,
+            },
+        ):
+            svc = RetrievalService(session_factory=factory)
+            results = await svc.async_search(
+                "00000000-0000-0000-0000-000000000099", "python async", top_k=5
+            )
+
+        assert len(results) == 1
+        assert results[0].content == "Python async patterns"
+        assert isinstance(results[0], DocumentChunk)
+
+    @pytest.mark.asyncio
+    async def test_async_search_empty_db_returns_empty(self):
+        """When DB returns no rows, async_search returns []."""
+        mock_repo = AsyncMock()
+        mock_repo.search.return_value = []
+
+        mock_session = AsyncMock()
+        mock_session.__aenter__ = AsyncMock(return_value=mock_session)
+        mock_session.__aexit__ = AsyncMock(return_value=None)
+
+        def factory():
+            return mock_session
+
+        mock_module = MagicMock()
+        mock_module.ArchivalRepository = MagicMock(return_value=mock_repo)
+        with patch.dict(
+            "sys.modules",
+            {
+                "storage.repositories.memory_blocks": mock_module,
+            },
+        ):
+            svc = RetrievalService(session_factory=factory)
+            results = await svc.async_search(
+                "00000000-0000-0000-0000-000000000099", "any query", top_k=5
+            )
+
+        assert results == []

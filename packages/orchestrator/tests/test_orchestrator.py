@@ -14,6 +14,7 @@ Spec scenarios covered:
 
 from __future__ import annotations
 
+import asyncio
 import os
 import sys
 from unittest.mock import MagicMock, patch
@@ -165,7 +166,7 @@ class TestRetrievalSkip:
         initial_state = RuntimeState(turn_request=req, retrieval_needed=False)
 
         with patch("orchestrator.nodes.call_model.complete", return_value=_mock_model_response()):
-            final = _run_sequential(initial_state)
+            final = asyncio.run(_run_sequential(initial_state))
 
         # When retrieval_needed=False, the retrieve_context node should NOT be in completed_nodes
         assert "retrieve_context" not in final.completed_nodes
@@ -189,7 +190,7 @@ class TestCheckpointResume:
         req = _make_request()
         initial = RuntimeState(turn_request=req, retrieval_needed=False)
         with patch("orchestrator.nodes.call_model.complete", return_value=_mock_model_response()):
-            final = _run_sequential(initial)
+            final = asyncio.run(_run_sequential(initial))
 
         assert "receive_request" in final.completed_nodes
         assert "load_state" in final.completed_nodes
@@ -202,7 +203,7 @@ class TestCheckpointResume:
         req = _make_request(retrieval_needed=True)
         initial = RuntimeState(turn_request=req, retrieval_needed=True)
         with patch("orchestrator.nodes.call_model.complete", return_value=_mock_model_response()):
-            final = _run_sequential(initial)
+            final = asyncio.run(_run_sequential(initial))
 
         assert "retrieve_context" in final.completed_nodes
 
