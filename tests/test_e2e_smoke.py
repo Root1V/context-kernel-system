@@ -16,6 +16,7 @@ The test verifies:
 
 from __future__ import annotations
 
+import asyncio
 import os
 import sys
 from collections.abc import Generator
@@ -203,7 +204,7 @@ class TestEndToEndTurn:
                 turn_request=req,
                 retrieval_needed=req.retrieval_needed,
             )
-            final_state = _run_sequential(initial_state)
+            final_state = asyncio.run(_run_sequential(initial_state))
 
         assert "assemble_context" in final_state.completed_nodes, (
             "assemble_context node was not executed during the turn"
