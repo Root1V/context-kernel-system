@@ -14,6 +14,7 @@ Public API:
 
 from __future__ import annotations
 
+import asyncio
 import logging
 import os
 import sys
@@ -146,7 +147,7 @@ def orchestrate(turn_request: TurnRequest) -> TurnResponse:
             final_state = result
     except ImportError:
         # LangGraph not installed — run nodes sequentially as a fallback.
-        final_state = _run_sequential(initial_state)
+        final_state = asyncio.run(_run_sequential(initial_state))
 
     if final_state.final_response is None:
         # Should not happen but guard defensively.
@@ -155,7 +156,7 @@ def orchestrate(turn_request: TurnRequest) -> TurnResponse:
     return final_state.final_response  # type: ignore[return-value]
 
 
-def _run_sequential(state: RuntimeState) -> RuntimeState:
+async def _run_sequential(state: RuntimeState) -> RuntimeState:
     """Fallback: run nodes sequentially when LangGraph is not installed."""
     req = state.turn_request
     sid = req.session_id
@@ -168,7 +169,7 @@ def _run_sequential(state: RuntimeState) -> RuntimeState:
         state = hydrate_memory(state)
     if state.retrieval_needed:
         with _trace_node("retrieve_context", session_id=sid):
-            state = retrieve_context(state)
+            state = await retrieve_context(state)
     with _trace_node("assemble_context", session_id=sid):
         state = assemble_context(state)
     with _trace_node("infer", session_id=sid):
